@@ -10,14 +10,24 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { redirect } from 'next/navigation';
+import { Suspense } from 'react';
 
-export default function StudentDashboardPage({ searchParams }: { searchParams: { rollNumber?: string } }) {
-  const rollNumberStr = searchParams.rollNumber;
-  if (!rollNumberStr) {
-    redirect('/student/login');
-  }
+function StudentInfo({ rollNumber }: { rollNumber: number | undefined }) {
+  const student = rollNumber ? findStudentByRollNumber(rollNumber) : null;
 
-  const rollNumber = parseInt(rollNumberStr, 10);
+  return (
+     <div className="flex flex-col">
+      <span className="font-semibold text-sidebar-foreground">
+        {student?.name || 'Student'}
+      </span>
+      <span className="text-xs text-sidebar-foreground/70">
+        Roll No: {student?.rollNumber || 'N/A'}
+      </span>
+    </div>
+  )
+}
+
+function StudentDashboard({ rollNumber }: { rollNumber: number }) {
   const student = findStudentByRollNumber(rollNumber);
   const attendance = getAttendanceForStudent(rollNumber);
 
@@ -95,5 +105,25 @@ export default function StudentDashboardPage({ searchParams }: { searchParams: {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function StudentDashboardPage({ searchParams }: { searchParams: { rollNumber?: string } }) {
+  const rollNumberStr = searchParams.rollNumber;
+  if (!rollNumberStr) {
+    redirect('/student/login');
+  }
+  const rollNumber = parseInt(rollNumberStr, 10);
+
+  return (
+    <>
+        {/* This is a trick to pass data to the layout from a page */}
+        <div className="hidden"> 
+            <Suspense fallback={<div>Loading...</div>}>
+                <StudentInfo rollNumber={rollNumber} />
+            </Suspense>
+        </div>
+        <StudentDashboard rollNumber={rollNumber} />
+    </>
   );
 }

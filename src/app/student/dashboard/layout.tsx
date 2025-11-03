@@ -1,3 +1,4 @@
+
 import Image from 'next/image';
 import {
   LogOut,
@@ -40,16 +41,12 @@ function StudentInfo({ rollNumber }: { rollNumber: number | undefined }) {
 
 export default function StudentDashboardLayout({
   children,
-  searchParams
 }: {
   children: React.ReactNode;
-  searchParams: { rollNumber?: string };
 }) {
   const studentAvatar = PlaceHolderImages.find(
     (img) => img.id === 'student-avatar'
   );
-
-  const rollNumber = searchParams.rollNumber ? parseInt(searchParams.rollNumber, 10) : undefined;
   
   return (
     <SidebarProvider>
@@ -85,14 +82,14 @@ export default function StudentDashboardLayout({
                 <AvatarFallback>S</AvatarFallback>
               </Avatar>
               <div className="group-data-[collapsible=icon]:hidden">
-                <Suspense fallback={<div>Loading...</div>}>
-                    <StudentInfo rollNumber={rollNumber} />
-                </Suspense>
+                {children}
               </div>
             </div>
           </SidebarFooter>
         </Sidebar>
-        <SidebarInset>{children}</SidebarInset>
+        <SidebarInset>
+            {children}
+        </SidebarInset>
       </div>
     </SidebarProvider>
   );
