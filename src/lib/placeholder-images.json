@@ -1,3 +1,16 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "teacher-avatar",
+      "description": "Avatar for a teacher",
+      "imageUrl": "https://images.unsplash.com/photo-1643773664163-1b7c307ae888?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxwZXJzb24lMjB0ZWFjaGVyfGVufDB8fHx8MTc2MjE1ODg4Mnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "person teacher"
+    },
+    {
+      "id": "student-avatar",
+      "description": "Avatar for a student",
+      "imageUrl": "https://images.unsplash.com/photo-1561065533-316e3142d586?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxwZXJzb24lMjBzdHVkZW50fGVufDB8fHx8MTc2MjE1ODg4Mnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "person student"
+    }
+  ]
 }
