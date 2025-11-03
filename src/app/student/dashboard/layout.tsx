@@ -20,29 +20,13 @@ import Logo from '@/components/app/logo';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import Link from 'next/link';
-import { findStudentByRollNumber } from '@/lib/data';
-import { Suspense } from 'react';
-
-function StudentInfo({ rollNumber }: { rollNumber: number | undefined }) {
-  const student = rollNumber ? findStudentByRollNumber(rollNumber) : null;
-
-  return (
-     <div className="flex flex-col">
-      <span className="font-semibold text-sidebar-foreground">
-        {student?.name || 'Student'}
-      </span>
-      <span className="text-xs text-sidebar-foreground/70">
-        Roll No: {student?.rollNumber || 'N/A'}
-      </span>
-    </div>
-  )
-}
-
 
 export default function StudentDashboardLayout({
   children,
+  info,
 }: {
   children: React.ReactNode;
+  info: React.ReactNode;
 }) {
   const studentAvatar = PlaceHolderImages.find(
     (img) => img.id === 'student-avatar'
@@ -82,7 +66,7 @@ export default function StudentDashboardLayout({
                 <AvatarFallback>S</AvatarFallback>
               </Avatar>
               <div className="group-data-[collapsible=icon]:hidden">
-                {children}
+                {info}
               </div>
             </div>
           </SidebarFooter>

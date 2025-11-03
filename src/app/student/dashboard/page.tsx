@@ -13,8 +13,8 @@ import { redirect } from 'next/navigation';
 import { Suspense } from 'react';
 import { Progress } from '@/components/ui/progress';
 
-function StudentInfo({ rollNumber }: { rollNumber: number | undefined }) {
-  const student = rollNumber ? findStudentByRollNumber(rollNumber) : null;
+function StudentInfo({ rollNumber }: { rollNumber: number }) {
+  const student = findStudentByRollNumber(rollNumber);
 
   return (
      <div className="flex flex-col">
@@ -158,16 +158,19 @@ export default function StudentDashboardPage({ searchParams }: { searchParams?: 
     redirect('/student/login');
   }
   const rollNumber = parseInt(rollNumberStr, 10);
+  
+  if (isNaN(rollNumber)) {
+    redirect('/student/login');
+  }
+
+  // Pass the student info to the layout via a special `info` prop
+  (StudentDashboardPage as any).info = (
+    <Suspense fallback={<div>Loading...</div>}>
+      <StudentInfo rollNumber={rollNumber} />
+    </Suspense>
+  );
 
   return (
-    <>
-        {/* This is a trick to pass data to the layout from a page */}
-        <div className="hidden"> 
-            <Suspense fallback={<div>Loading...</div>}>
-                <StudentInfo rollNumber={rollNumber} />
-            </Suspense>
-        </div>
-        <StudentDashboard rollNumber={rollNumber} />
-    </>
+    <StudentDashboard rollNumber={rollNumber} />
   );
 }
