@@ -1,3 +1,6 @@
+
+'use client';
+
 import { getAttendanceForStudent, findStudentByRollNumber } from '@/lib/data';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -12,6 +15,7 @@ import { Badge } from '@/components/ui/badge';
 import { redirect } from 'next/navigation';
 import { Suspense, useMemo } from 'react';
 import { Progress } from '@/components/ui/progress';
+import type { AttendanceRecord } from '@/lib/types';
 
 function StudentInfo({ rollNumber }: { rollNumber: number }) {
   const student = findStudentByRollNumber(rollNumber);
@@ -28,6 +32,23 @@ function StudentInfo({ rollNumber }: { rollNumber: number }) {
   )
 }
 
+function calculateAttendanceStats(attendance: AttendanceRecord[]) {
+  const attendanceByDate = attendance.reduce((acc, record) => {
+    (acc[record.date] = acc[record.date] || []).push(record);
+    return acc;
+  }, {} as Record<string, typeof attendance>);
+
+  const sortedDates = Object.keys(attendanceByDate).sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
+
+  const totalRecords = attendance.length;
+  const presentRecords = attendance.filter(r => r.status === 'Present').length;
+  const absentRecords = totalRecords - presentRecords;
+  const attendancePercentage = totalRecords > 0 ? Math.round((presentRecords / totalRecords) * 100) : 100;
+
+  return { attendanceByDate, sortedDates, totalRecords, presentRecords, absentRecords, attendancePercentage };
+}
+
+
 function StudentDashboard({ rollNumber }: { rollNumber: number }) {
   const student = findStudentByRollNumber(rollNumber);
 
@@ -36,30 +57,7 @@ function StudentDashboard({ rollNumber }: { rollNumber: number }) {
   }
   
   const attendance = getAttendanceForStudent(rollNumber);
-
-  const { attendanceByDate, sortedDates, totalRecords, presentRecords, absentRecords, attendancePercentage } = useMemo(() => {
-    const attendanceByDate = attendance.reduce((acc, record) => {
-      (acc[record.date] = acc[record.date] || []).push(record);
-      return acc;
-    }, {} as Record<string, typeof attendance>);
-
-    const sortedDates = Object.keys(attendanceByDate).sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
-
-    const totalRecords = attendance.length;
-    const presentRecords = attendance.filter(r => r.status === 'Present').length;
-    const absentRecords = totalRecords - presentRecords;
-    const attendancePercentage = totalRecords > 0 ? Math.round((presentRecords / totalRecords) * 100) : 100;
-    
-    return {
-      attendanceByDate,
-      sortedDates,
-      totalRecords,
-      presentRecords,
-      absentRecords,
-      attendancePercentage,
-    };
-  }, [attendance]);
-
+  const { attendanceByDate, sortedDates, totalRecords, presentRecords, absentRecords, attendancePercentage } = useMemo(() => calculateAttendanceStats(attendance), [attendance]);
 
   return (
     <div className="flex-1 p-4 md:p-8">
