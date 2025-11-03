@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import {
   BookCheck,
+  CalendarDays,
   LayoutDashboard,
   LogOut,
   ScanLine,
@@ -97,6 +98,19 @@ export default function TeacherDashboardLayout({
                   >
                     <ScanLine />
                     <span>Summary Tool</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  tooltip={{ children: 'Timetable' }}
+                >
+                  <Link
+                    href={`/teacher/dashboard/timetable?name=${teacherName || ''}`}
+                  >
+                    <CalendarDays />
+                    <span>Timetable</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

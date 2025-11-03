@@ -57,6 +57,9 @@ export default function RootLayout({
                 <p className="text-center text-sm leading-loose text-muted-foreground md:text-left">
                   This app is only for A9 students CSE.
                 </p>
+                <p className="text-center text-sm leading-loose text-muted-foreground md:text-right">
+                  Created by Dhanunjay
+                </p>
               </div>
             </footer>
           </div>
