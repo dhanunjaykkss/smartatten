@@ -42,7 +42,7 @@ export default function StudentLoginForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      rollNumber: undefined,
+      rollNumber: '' as any,
     },
   });
 
@@ -67,7 +67,12 @@ export default function StudentLoginForm() {
                   type="number"
                   placeholder="e.g., 463"
                   {...field}
-                  onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                  onChange={(e) =>
+                    field.onChange(
+                      e.target.value === '' ? '' : e.target.valueAsNumber
+                    )
+                  }
+                  value={field.value ?? ''}
                 />
               </FormControl>
               <FormMessage />
