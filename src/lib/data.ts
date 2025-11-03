@@ -20,13 +20,14 @@ export const findStudentByRollNumber = (rollNumber: number): Student | undefined
 };
 
 export const classes = [
-  "Algebra II",
-  "World History",
-  "AP Chemistry",
-  "English Literature",
-  "Physics I",
-  "Computer Science",
-  "Studio Art"
+  "C Programming Lab",
+  "Computer Engineering Workshop",
+  "Computer Programming Using C",
+  "IT Essentials",
+  "Communication Skills Lab",
+  "English",
+  "Mathematics–I",
+  "Green Chemistry",
 ];
 
 // In-memory store for attendance
@@ -57,21 +58,23 @@ if (typeof window === 'undefined') { // Run only on server to avoid multiple run
 
 const teacherSchedules: TeacherSchedule[] = [
   {
-    teacherName: 'Jane Doe',
+    teacherName: 'Jane Doe', // This is a sample teacher name.
     schedule: {
-      Monday: ['Algebra II', 'AP Chemistry'],
-      Tuesday: ['World History', 'Physics I'],
-      Wednesday: ['Algebra II', 'Computer Science'],
-      Thursday: ['World History', 'Studio Art'],
-      Friday: ['AP Chemistry', 'English Literature'],
-      Saturday: [],
+      Monday: ['C Programming Lab', 'Computer Engineering Workshop'],
+      Tuesday: ['Computer Programming Using C', 'IT Essentials'],
+      Wednesday: ['Communication Skills Lab', 'C Programming Lab'],
+      Thursday: ['English', 'IT Essentials', 'Computer Programming Using C'],
+      Friday: ['Mathematics–I', 'Green Chemistry', 'Computer Engg. Workshop', 'Communication Skills Lab'],
+      Saturday: ['Green Chemistry', 'Mathematics–I'],
       Sunday: [],
     },
   },
 ];
 
 export const getTeacherSchedule = (teacherName: string): TeacherSchedule | undefined => {
-  return teacherSchedules.find(s => s.teacherName === teacherName);
+  // In a real app, you'd find the schedule for the specific teacher.
+  // For this demo, we'll return the first schedule for any teacher.
+  return teacherSchedules.find(s => s.teacherName === teacherName) || teacherSchedules[0];
 };
 
 
