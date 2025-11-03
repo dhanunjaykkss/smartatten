@@ -20,14 +20,17 @@ export const findStudentByRollNumber = (rollNumber: number): Student | undefined
 };
 
 export const classes = [
-  "C Programming Lab",
-  "Computer Engineering Workshop",
-  "Computer Programming Using C",
-  "IT Essentials",
-  "Communication Skills Lab",
-  "English",
-  "Mathematics–I",
-  "Green Chemistry",
+    "C Programming Lab (Batch CSE-SS-13)",
+    "Computer Engineering Workshop (Batch CSE-SS-14)",
+    "Computer Programming Using C",
+    "IT Essentials",
+    "Communication Skills Lab (Batch CSE-SS-13)",
+    "English",
+    "Mathematics–I",
+    "Green Chemistry",
+    "C Programming Lab (Batch CSE-SS-14)",
+    "Computer Engg. Workshop (Batch CSE-SS-13)",
+    "Communication Skills Lab (Batch CSE-SS-14)",
 ];
 
 // In-memory store for attendance
@@ -60,13 +63,34 @@ const teacherSchedules: TeacherSchedule[] = [
   {
     teacherName: 'Jane Doe', // This is a sample teacher name.
     schedule: {
-      Monday: ['C Programming Lab', 'Computer Engineering Workshop'],
-      Tuesday: ['Computer Programming Using C', 'IT Essentials'],
-      Wednesday: ['Communication Skills Lab', 'C Programming Lab'],
-      Thursday: ['English', 'IT Essentials', 'Computer Programming Using C'],
-      Friday: ['Mathematics–I', 'Green Chemistry', 'Computer Engg. Workshop', 'Communication Skills Lab'],
-      Saturday: ['Green Chemistry', 'Mathematics–I'],
-      Sunday: [],
+        Monday: [
+            "C Programming Lab (Batch CSE-SS-13)",
+            "Computer Engineering Workshop (Batch CSE-SS-14)",
+        ],
+        Tuesday: [
+            "Computer Programming Using C",
+            "IT Essentials",
+        ],
+        Wednesday: [
+            "Communication Skills Lab (Batch CSE-SS-13)",
+            "C Programming Lab (Batch CSE-SS-14)",
+        ],
+        Thursday: [
+            "English",
+            "IT Essentials",
+            "Computer Programming Using C",
+        ],
+        Friday: [
+            "Mathematics–I",
+            "Green Chemistry",
+            "Computer Engg. Workshop (Batch CSE-SS-13)",
+            "Communication Skills Lab (Batch CSE-SS-14)",
+        ],
+        Saturday: [
+            "Green Chemistry",
+            "Mathematics–I"
+        ],
+        Sunday: [],
     },
   },
 ];
