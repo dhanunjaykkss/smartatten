@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { redirect } from 'next/navigation';
-import { Suspense } from 'react';
+import { Suspense, useMemo } from 'react';
 import { Progress } from '@/components/ui/progress';
 
 function StudentInfo({ rollNumber }: { rollNumber: number }) {
@@ -30,23 +30,35 @@ function StudentInfo({ rollNumber }: { rollNumber: number }) {
 
 function StudentDashboard({ rollNumber }: { rollNumber: number }) {
   const student = findStudentByRollNumber(rollNumber);
-  const attendance = getAttendanceForStudent(rollNumber);
 
   if (!student) {
     redirect('/student/login');
   }
+  
+  const attendance = getAttendanceForStudent(rollNumber);
 
-  const attendanceByDate = attendance.reduce((acc, record) => {
-    (acc[record.date] = acc[record.date] || []).push(record);
-    return acc;
-  }, {} as Record<string, typeof attendance>);
+  const { attendanceByDate, sortedDates, totalRecords, presentRecords, absentRecords, attendancePercentage } = useMemo(() => {
+    const attendanceByDate = attendance.reduce((acc, record) => {
+      (acc[record.date] = acc[record.date] || []).push(record);
+      return acc;
+    }, {} as Record<string, typeof attendance>);
 
-  const sortedDates = Object.keys(attendanceByDate).sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
+    const sortedDates = Object.keys(attendanceByDate).sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
 
-  const totalRecords = attendance.length;
-  const presentRecords = attendance.filter(r => r.status === 'Present').length;
-  const absentRecords = totalRecords - presentRecords;
-  const attendancePercentage = totalRecords > 0 ? Math.round((presentRecords / totalRecords) * 100) : 100;
+    const totalRecords = attendance.length;
+    const presentRecords = attendance.filter(r => r.status === 'Present').length;
+    const absentRecords = totalRecords - presentRecords;
+    const attendancePercentage = totalRecords > 0 ? Math.round((presentRecords / totalRecords) * 100) : 100;
+    
+    return {
+      attendanceByDate,
+      sortedDates,
+      totalRecords,
+      presentRecords,
+      absentRecords,
+      attendancePercentage,
+    };
+  }, [attendance]);
 
 
   return (
@@ -115,7 +127,7 @@ function StudentDashboard({ rollNumber }: { rollNumber: number }) {
                         {sortedDates.length > 0 ? (
                         sortedDates.flatMap(date =>
                             attendanceByDate[date].map((record, index) => (
-                            <TableRow key={`${record.date}-${record.class}`}>
+                            <TableRow key={`${record.date}-${record.class}-${record.studentRollNumber}`}>
                                 {index === 0 && (
                                 <TableCell rowSpan={attendanceByDate[date].length} className="align-top font-medium">
                                     {new Date(date).toLocaleDateString(undefined, {
