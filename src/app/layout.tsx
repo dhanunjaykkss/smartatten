@@ -3,7 +3,7 @@ import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 
 export const metadata: Metadata = {
-  title: 'ClassMate',
+  title: 'SmartAtten',
   description: 'Streamlining classroom management for teachers and students.',
 };
 

@@ -16,7 +16,7 @@ export default function Home() {
       <div className="flex flex-col items-center justify-center text-center">
         <Logo />
         <h1 className="mt-4 font-headline text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl">
-          Welcome to ClassMate
+          Welcome to SmartAtten
         </h1>
         <p className="mt-4 max-w-xl text-lg text-muted-foreground">
           Streamlining classroom management. Log in to your dedicated portal to
@@ -84,7 +84,7 @@ export default function Home() {
         </Card>
       </div>
       <footer className="mt-12 text-center text-sm text-muted-foreground">
-        <p>&copy; {new Date().getFullYear()} ClassMate. All rights reserved.</p>
+        <p>&copy; {new Date().getFullYear()} SmartAtten. All rights reserved.</p>
       </footer>
     </main>
   );

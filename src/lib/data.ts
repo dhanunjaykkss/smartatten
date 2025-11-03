@@ -1,4 +1,4 @@
-import type { Student, AttendanceRecord } from './types';
+import type { Student, AttendanceRecord, TeacherSchedule } from './types';
 
 // Generate student data
 const students: Student[] = [];
@@ -54,6 +54,25 @@ if (typeof window === 'undefined') { // Run only on server to avoid multiple run
     });
   });
 }
+
+const teacherSchedules: TeacherSchedule[] = [
+  {
+    teacherName: 'Jane Doe',
+    schedule: {
+      Monday: ['Algebra II', 'AP Chemistry'],
+      Tuesday: ['World History', 'Physics I'],
+      Wednesday: ['Algebra II', 'Computer Science'],
+      Thursday: ['World History', 'Studio Art'],
+      Friday: ['AP Chemistry', 'English Literature'],
+      Saturday: [],
+      Sunday: [],
+    },
+  },
+];
+
+export const getTeacherSchedule = (teacherName: string): TeacherSchedule | undefined => {
+  return teacherSchedules.find(s => s.teacherName === teacherName);
+};
 
 
 export const getAttendanceForDateAndClass = (date: string, className: string): AttendanceRecord[] => {

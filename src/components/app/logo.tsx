@@ -7,7 +7,7 @@ export default function Logo() {
         <BookHeart className="h-8 w-8 text-primary-foreground" />
       </div>
       <span className="font-headline text-2xl font-bold text-foreground">
-        ClassMate
+        SmartAtten
       </span>
     </div>
   );

@@ -10,3 +10,10 @@ export interface AttendanceRecord {
   class: string;
   status: 'Present' | 'Absent';
 }
+
+export interface TeacherSchedule {
+  teacherName: string;
+  schedule: {
+    [dayOfWeek: string]: string[]; // dayOfWeek: "Sunday", "Monday", ...
+  };
+}

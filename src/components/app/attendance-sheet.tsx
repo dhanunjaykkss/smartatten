@@ -2,7 +2,7 @@
 
 import { useState, useTransition, useEffect } from 'react';
 import { format } from 'date-fns';
-import { Calendar as CalendarIcon, Check, Loader2, X } from 'lucide-react';
+import { Calendar as CalendarIcon, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
@@ -26,12 +26,15 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import type { Student, AttendanceRecord } from '@/lib/types';
 import { saveAttendanceAction } from '@/lib/actions';
 import { useToast } from '@/hooks/use-toast';
 import { Switch } from '../ui/switch';
 import { Label } from '../ui/label';
+import { Alert, AlertTitle, AlertDescription } from '../ui/alert';
+import { Info } from 'lucide-react';
+
 
 type AttendanceStatus = 'Present' | 'Absent';
 
@@ -44,8 +47,8 @@ export default function AttendanceSheet({
   classes: string[];
   initialAttendance: AttendanceRecord[];
 }) {
-  const [date, setDate] = useState<Date>(new Date());
-  const [selectedClass, setSelectedClass] = useState<string>(classes[0]);
+  const [date] = useState<Date>(new Date());
+  const [selectedClass, setSelectedClass] = useState<string>(classes.length > 0 ? classes[0] : '');
   const [attendance, setAttendance] = useState<Record<number, AttendanceStatus>>({});
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
@@ -65,6 +68,14 @@ export default function AttendanceSheet({
   };
   
   const handleSaveAttendance = async () => {
+    if (!selectedClass) {
+        toast({
+          variant: 'destructive',
+          title: 'No Class Selected',
+          description: 'Please select a class to save attendance.',
+        });
+        return;
+    }
     startTransition(async () => {
       const formattedDate = format(date, 'yyyy-MM-dd');
       const result = await saveAttendanceAction(
@@ -88,15 +99,60 @@ export default function AttendanceSheet({
     });
   };
 
+  const isToday = format(date, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd');
+
+  if (!isToday) {
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle className='font-headline'>Attendance Controls</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <Alert>
+                    <Info className="h-4 w-4" />
+                    <AlertTitle>Attendance Not Available</AlertTitle>
+                    <AlertDescription>
+                        Attendance can only be taken for the current day.
+                    </AlertDescription>
+                </Alert>
+            </CardContent>
+        </Card>
+    )
+  }
+  
+  if (classes.length === 0) {
+      return (
+        <Card>
+            <CardHeader>
+                <CardTitle className='font-headline'>Attendance</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <Alert>
+                    <Info className="h-4 w-4" />
+                    <AlertTitle>No Classes Today</AlertTitle>
+                    <AlertDescription>
+                        You have no classes scheduled for today.
+                    </AlertDescription>
+                </Alert>
+            </CardContent>
+        </Card>
+      )
+  }
+
+
   return (
     <Card>
       <CardHeader>
         <CardTitle className='font-headline'>Attendance Controls</CardTitle>
+        <CardDescription>
+            You can only take attendance for your classes scheduled today, <strong>{format(date, 'PPP')}</strong>.
+        </CardDescription>
         <div className="mt-4 flex flex-col gap-4 md:flex-row md:items-center">
           <Popover>
             <PopoverTrigger asChild>
               <Button
                 variant={'outline'}
+                disabled
                 className={cn(
                   'w-full justify-start text-left font-normal md:w-[280px]',
                   !date && 'text-muted-foreground'
@@ -110,7 +166,7 @@ export default function AttendanceSheet({
               <Calendar
                 mode="single"
                 selected={date}
-                onSelect={(day) => day && setDate(day)}
+                disabled
                 initialFocus
               />
             </PopoverContent>
@@ -140,7 +196,8 @@ export default function AttendanceSheet({
               <TableRow>
                 <TableHead>Roll No.</TableHead>
                 <TableHead>Student Name</TableHead>
-                <TableHead className="text-right">Status</TableHead>
+                <TableHead>Status (Present/Absent)</TableHead>
+                <TableHead className="text-right">Summary</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -148,8 +205,8 @@ export default function AttendanceSheet({
                 <TableRow key={student.rollNumber}>
                   <TableCell className="font-medium">{student.rollNumber}</TableCell>
                   <TableCell>{student.name}</TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex items-center justify-end gap-2">
+                  <TableCell>
+                    <div className="flex items-center gap-2">
                       <Label htmlFor={`status-${student.rollNumber}`} className="text-muted-foreground">Absent</Label>
                       <Switch
                         id={`status-${student.rollNumber}`}
@@ -159,6 +216,13 @@ export default function AttendanceSheet({
                       />
                       <Label htmlFor={`status-${student.rollNumber}`} className="font-medium text-foreground">Present</Label>
                     </div>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    {attendance[student.rollNumber] === 'Present' ? (
+                        <span className='font-medium text-green-600'>Present</span>
+                    ) : (
+                        <span className='font-medium text-red-600'>Absent</span>
+                    )}
                   </TableCell>
                 </TableRow>
               ))}

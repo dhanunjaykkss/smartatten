@@ -22,6 +22,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import Link from 'next/link';
 import { Suspense } from 'react';
+import DateTimeDisplay from '@/components/app/date-time-display';
 
 function TeacherName({ name }: { name: string | undefined }) {
   return (
@@ -131,7 +132,12 @@ export default function TeacherDashboardLayout({
             </div>
           </SidebarFooter>
         </Sidebar>
-        <SidebarInset>{children}</SidebarInset>
+        <SidebarInset>
+          <header className="flex h-14 items-center justify-end border-b bg-background px-4">
+            <DateTimeDisplay />
+          </header>
+          {children}
+        </SidebarInset>
       </div>
     </SidebarProvider>
   );
