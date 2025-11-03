@@ -11,6 +11,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { redirect } from 'next/navigation';
 import { Suspense } from 'react';
+import { Progress } from '@/components/ui/progress';
 
 function StudentInfo({ rollNumber }: { rollNumber: number | undefined }) {
   const student = rollNumber ? findStudentByRollNumber(rollNumber) : null;
@@ -42,6 +43,11 @@ function StudentDashboard({ rollNumber }: { rollNumber: number }) {
 
   const sortedDates = Object.keys(attendanceByDate).sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
 
+  const totalRecords = attendance.length;
+  const presentRecords = attendance.filter(r => r.status === 'Present').length;
+  const absentRecords = totalRecords - presentRecords;
+  const attendancePercentage = totalRecords > 0 ? Math.round((presentRecords / totalRecords) * 100) : 100;
+
 
   return (
     <div className="flex-1 p-4 md:p-8">
@@ -50,66 +56,104 @@ function StudentDashboard({ rollNumber }: { rollNumber: number }) {
           {student.name}'s Attendance
         </h1>
         <p className="mt-2 text-muted-foreground">
-          Here is your attendance record across all classes.
+          Here is a summary and detailed record of your attendance.
         </p>
       </div>
       
-      <Card>
-        <CardHeader>
-          <CardTitle>Attendance History</CardTitle>
-          <CardDescription>Records are sorted by the most recent date.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="overflow-auto rounded-lg border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Class</TableHead>
-                  <TableHead>Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {sortedDates.length > 0 ? (
-                  sortedDates.flatMap(date =>
-                    attendanceByDate[date].map((record, index) => (
-                      <TableRow key={`${record.date}-${record.class}`}>
-                        {index === 0 && (
-                          <TableCell rowSpan={attendanceByDate[date].length} className="align-top font-medium">
-                            {new Date(date).toLocaleDateString(undefined, {
-                              year: 'numeric',
-                              month: 'long',
-                              day: 'numeric',
-                            })}
-                          </TableCell>
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+        {/* Left Column: Summary */}
+        <div className="space-y-8">
+            <Card>
+                <CardHeader>
+                    <CardTitle>Attendance Summary</CardTitle>
+                    <CardDescription>Your overall attendance statistics.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                    <div>
+                        <div className="mb-2 flex justify-between">
+                            <span className="text-muted-foreground">Overall Attendance</span>
+                            <span className="font-bold">{attendancePercentage}%</span>
+                        </div>
+                        <Progress value={attendancePercentage} aria-label={`${attendancePercentage}% attendance`} />
+                    </div>
+                    <div className="grid grid-cols-3 gap-4 text-center">
+                        <div>
+                            <p className="text-2xl font-bold">{totalRecords}</p>
+                            <p className="text-sm text-muted-foreground">Total Classes</p>
+                        </div>
+                        <div>
+                            <p className="text-2xl font-bold text-green-600">{presentRecords}</p>
+                            <p className="text-sm text-muted-foreground">Present</p>
+                        </div>
+                        <div>
+                            <p className="text-2xl font-bold text-red-600">{absentRecords}</p>
+                            <p className="text-sm text-muted-foreground">Absent</p>
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
+        </div>
+
+        {/* Right Column: History */}
+        <div>
+            <Card>
+                <CardHeader>
+                <CardTitle>Detailed History</CardTitle>
+                <CardDescription>Records are sorted by the most recent date.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                <div className="max-h-[60vh] overflow-auto rounded-lg border">
+                    <Table>
+                    <TableHeader>
+                        <TableRow>
+                        <TableHead>Date</TableHead>
+                        <TableHead>Class</TableHead>
+                        <TableHead>Status</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {sortedDates.length > 0 ? (
+                        sortedDates.flatMap(date =>
+                            attendanceByDate[date].map((record, index) => (
+                            <TableRow key={`${record.date}-${record.class}`}>
+                                {index === 0 && (
+                                <TableCell rowSpan={attendanceByDate[date].length} className="align-top font-medium">
+                                    {new Date(date).toLocaleDateString(undefined, {
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric',
+                                    })}
+                                </TableCell>
+                                )}
+                                <TableCell>{record.class}</TableCell>
+                                <TableCell>
+                                <Badge variant={record.status === 'Present' ? 'default' : 'destructive'}>
+                                    {record.status}
+                                </Badge>
+                                </TableCell>
+                            </TableRow>
+                            ))
+                        )
+                        ) : (
+                        <TableRow>
+                            <TableCell colSpan={3} className="text-center">
+                            No attendance records found.
+                            </TableCell>
+                        </TableRow>
                         )}
-                        <TableCell>{record.class}</TableCell>
-                        <TableCell>
-                          <Badge variant={record.status === 'Present' ? 'default' : 'destructive'}>
-                            {record.status}
-                          </Badge>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  )
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={3} className="text-center">
-                      No attendance records found.
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </div>
-        </CardContent>
-      </Card>
+                    </TableBody>
+                    </Table>
+                </div>
+                </CardContent>
+            </Card>
+        </div>
+      </div>
     </div>
   );
 }
 
-export default function StudentDashboardPage({ searchParams }: { searchParams: { rollNumber?: string } }) {
-  const rollNumberStr = searchParams.rollNumber;
+export default function StudentDashboardPage({ searchParams }: { searchParams?: { rollNumber?: string } }) {
+  const rollNumberStr = searchParams?.rollNumber;
   if (!rollNumberStr) {
     redirect('/student/login');
   }
