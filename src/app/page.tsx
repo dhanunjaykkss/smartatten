@@ -8,13 +8,11 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import Logo from '@/components/app/logo';
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen w-full flex-col items-center justify-center bg-gradient-to-br from-background to-secondary p-4">
+    <div className="container relative flex h-full flex-col items-center justify-center">
       <div className="flex flex-col items-center justify-center text-center">
-        <Logo />
         <h1 className="mt-4 font-headline text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl">
           Welcome to SmartAtten
         </h1>
@@ -86,6 +84,6 @@ export default function Home() {
       <footer className="mt-12 text-center text-sm text-muted-foreground">
         <p>&copy; {new Date().getFullYear()} SmartAtten. All rights reserved.</p>
       </footer>
-    </main>
+    </div>
   );
 }
