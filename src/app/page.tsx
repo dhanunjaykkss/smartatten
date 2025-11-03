@@ -8,10 +8,11 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import TimetableDisplay from '@/components/app/timetable-display';
 
 export default function Home() {
   return (
-    <div className="container relative flex h-full flex-col items-center justify-center">
+    <div className="container relative flex h-full flex-col items-center justify-center py-12">
       <div className="flex flex-col items-center justify-center text-center">
         <h1 className="mt-4 font-headline text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl">
           Welcome to SmartAtten
@@ -81,6 +82,11 @@ export default function Home() {
           </CardContent>
         </Card>
       </div>
+
+      <div className="mt-16 w-full max-w-7xl">
+        <TimetableDisplay />
+      </div>
+      
       <footer className="mt-12 text-center text-sm text-muted-foreground">
         <p>&copy; {new Date().getFullYear()} SmartAtten. All rights reserved.</p>
       </footer>

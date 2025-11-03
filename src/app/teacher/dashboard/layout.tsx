@@ -1,7 +1,6 @@
 import Image from 'next/image';
 import {
   BookCheck,
-  CalendarDays,
   LayoutDashboard,
   LogOut,
   ScanLine,
@@ -39,7 +38,7 @@ function TeacherName({ name }: { name: string | undefined }) {
 
 export default function TeacherDashboardLayout({
   children,
-  ...props
+  searchParams,
 }: {
   children: React.ReactNode;
   searchParams?: { [key: string]: string | string[] | undefined };
@@ -47,7 +46,7 @@ export default function TeacherDashboardLayout({
   const teacherAvatar = PlaceHolderImages.find(
     (img) => img.id === 'teacher-avatar'
   );
-  const teacherName = props.searchParams?.name as string | undefined;
+  const teacherName = searchParams?.name as string | undefined;
 
   return (
     <SidebarProvider>
@@ -98,19 +97,6 @@ export default function TeacherDashboardLayout({
                   >
                     <ScanLine />
                     <span>Summary Tool</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  tooltip={{ children: 'Timetable' }}
-                >
-                  <Link
-                    href={`/teacher/dashboard/timetable?name=${teacherName || ''}`}
-                  >
-                    <CalendarDays />
-                    <span>Timetable</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
