@@ -1,6 +1,7 @@
 'use client';
 
-import { useFormState, useFormStatus } from 'react-dom';
+import { useActionState } from 'react';
+import { useFormStatus } from 'react-dom';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -33,7 +34,7 @@ function SubmitButton() {
 }
 
 export default function TeacherLoginForm() {
-  const [state, formAction] = useFormState(teacherLogin, {
+  const [state, formAction] = useActionState(teacherLogin, {
     message: '',
   });
 

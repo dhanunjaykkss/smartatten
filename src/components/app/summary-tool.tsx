@@ -1,12 +1,12 @@
 'use client';
 
-import { useFormState, useFormStatus } from 'react-dom';
+import { useActionState, useEffect } from 'react';
+import { useFormStatus } from 'react-dom';
 import { getSummaryAction } from '@/lib/actions';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, Wand2 } from 'lucide-react';
-import { useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 
 function SubmitButton() {
@@ -34,7 +34,7 @@ const initialState = {
 };
 
 export default function SummaryTool() {
-  const [state, formAction] = useFormState(getSummaryAction, initialState);
+  const [state, formAction] = useActionState(getSummaryAction, initialState);
   const { toast } = useToast();
 
   useEffect(() => {
