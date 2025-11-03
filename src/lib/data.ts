@@ -101,33 +101,6 @@ export const classes = [
     "Communication Skills Lab (Batch CSE-SS-14)",
 ];
 
-// In-memory store for attendance
-let attendanceLog: AttendanceRecord[] = [];
-
-// Pre-populate with some fake data for the summary tool
-if (typeof window === 'undefined') { // Run only on server to avoid multiple runs
-  const today = new Date();
-  const datesToPopulate = Array.from({ length: 5 }, (_, i) => {
-    const d = new Date(today);
-    d.setDate(d.getDate() - i);
-    return d.toISOString().split('T')[0];
-  });
-  
-  datesToPopulate.forEach(date => {
-    const schedulableClasses = getTeacherSchedule('Jane Doe')?.schedule[new Date(date).toLocaleDateString('en-US', { weekday: 'long' })] || [];
-    schedulableClasses.forEach(className => {
-      students.forEach(student => {
-        attendanceLog.push({
-          studentRollNumber: student.rollNumber,
-          date,
-          class: className,
-          status: Math.random() > 0.1 ? 'Present' : 'Absent'
-        });
-      });
-    });
-  });
-}
-
 const teacherSchedules: TeacherSchedule[] = [
   {
     teacherName: 'Jane Doe', // This is a sample teacher name.
@@ -169,6 +142,33 @@ export const getTeacherSchedule = (teacherName: string): TeacherSchedule | undef
   // For this demo, we'll return the first schedule for any teacher.
   return teacherSchedules.find(s => s.teacherName === teacherName) || teacherSchedules[0];
 };
+
+// In-memory store for attendance
+let attendanceLog: AttendanceRecord[] = [];
+
+// Pre-populate with some fake data for the summary tool
+if (typeof window === 'undefined') { // Run only on server to avoid multiple runs
+  const today = new Date();
+  const datesToPopulate = Array.from({ length: 5 }, (_, i) => {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    return d.toISOString().split('T')[0];
+  });
+  
+  datesToPopulate.forEach(date => {
+    const schedulableClasses = getTeacherSchedule('Jane Doe')?.schedule[new Date(date).toLocaleDateString('en-US', { weekday: 'long' })] || [];
+    schedulableClasses.forEach(className => {
+      students.forEach(student => {
+        attendanceLog.push({
+          studentRollNumber: student.rollNumber,
+          date,
+          class: className,
+          status: Math.random() > 0.1 ? 'Present' : 'Absent'
+        });
+      });
+    });
+  });
+}
 
 
 export const getAttendanceForDateAndClass = (date: string, className: string): AttendanceRecord[] => {
