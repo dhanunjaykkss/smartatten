@@ -88,17 +88,14 @@ export const findStudentByRollNumber = (rollNumber: number): Student | undefined
 };
 
 export const classes = [
-    "C Programming Lab (Batch CSE-SS-13)",
-    "Computer Engineering Workshop (Batch CSE-SS-14)",
+    "C Programming Lab",
+    "Computer Engineering Workshop",
     "Computer Programming Using C",
     "IT Essentials",
-    "Communication Skills Lab (Batch CSE-SS-13)",
+    "Communication Skills Lab",
     "English",
     "Mathematics–I",
     "Green Chemistry",
-    "C Programming Lab (Batch CSE-SS-14)",
-    "Computer Engg. Workshop (Batch CSE-SS-13)",
-    "Communication Skills Lab (Batch CSE-SS-14)",
 ];
 
 const teacherSchedules: TeacherSchedule[] = [
@@ -106,16 +103,16 @@ const teacherSchedules: TeacherSchedule[] = [
     teacherName: 'Jane Doe', // This is a sample teacher name.
     schedule: {
         Monday: [
-            "C Programming Lab (Batch CSE-SS-13)",
-            "Computer Engineering Workshop (Batch CSE-SS-14)",
+            "C Programming Lab",
+            "Computer Engineering Workshop",
         ],
         Tuesday: [
             "Computer Programming Using C",
             "IT Essentials",
         ],
         Wednesday: [
-            "Communication Skills Lab (Batch CSE-SS-13)",
-            "C Programming Lab (Batch CSE-SS-14)",
+            "Communication Skills Lab",
+            "C Programming Lab",
         ],
         Thursday: [
             "English",
@@ -125,8 +122,8 @@ const teacherSchedules: TeacherSchedule[] = [
         Friday: [
             "Mathematics–I",
             "Green Chemistry",
-            "Computer Engg. Workshop (Batch CSE-SS-13)",
-            "Communication Skills Lab (Batch CSE-SS-14)",
+            "Computer Engineering Workshop",
+            "Communication Skills Lab",
         ],
         Saturday: [
             "Green Chemistry",
@@ -147,28 +144,30 @@ export const getTeacherSchedule = (teacherName: string): TeacherSchedule | undef
 let attendanceLog: AttendanceRecord[] = [];
 
 // Pre-populate with some fake data for the summary tool
-if (typeof window === 'undefined') { // Run only on server to avoid multiple runs
-  const today = new Date();
-  const datesToPopulate = Array.from({ length: 5 }, (_, i) => {
-    const d = new Date(today);
-    d.setDate(d.getDate() - i);
-    return d.toISOString().split('T')[0];
-  });
-  
-  datesToPopulate.forEach(date => {
-    const schedulableClasses = getTeacherSchedule('Jane Doe')?.schedule[new Date(date).toLocaleDateString('en-US', { weekday: 'long' })] || [];
-    schedulableClasses.forEach(className => {
-      students.forEach(student => {
-        attendanceLog.push({
-          studentRollNumber: student.rollNumber,
-          date,
-          class: className,
-          status: Math.random() > 0.1 ? 'Present' : 'Absent'
-        });
+const today = new Date();
+const datesToPopulate = Array.from({ length: 5 }, (_, i) => {
+  const d = new Date(today);
+  d.setDate(d.getDate() - i);
+  return d.toISOString().split('T')[0];
+});
+
+datesToPopulate.forEach(date => {
+  const dayOfWeek = new Date(date).toLocaleDateString('en-US', { weekday: 'long' });
+  const schedulableClasses = getTeacherSchedule('Jane Doe')?.schedule[dayOfWeek] || [];
+  schedulableClasses.forEach(className => {
+    students.forEach(student => {
+      // To make student data different but consistent across reloads,
+      // we can use a deterministic "random" value based on roll number and date.
+      const pseudoRandom = (student.rollNumber + new Date(date).getTime()) % 10;
+      attendanceLog.push({
+        studentRollNumber: student.rollNumber,
+        date,
+        class: className,
+        status: pseudoRandom > 0 ? 'Present' : 'Absent' // Approx 10% absent
       });
     });
   });
-}
+});
 
 
 export const getAttendanceForDateAndClass = (date: string, className: string): AttendanceRecord[] => {
