@@ -162,8 +162,8 @@ function StudentDashboard({ rollNumber }: { rollNumber: number }) {
   );
 }
 
-export default function StudentDashboardPage({ searchParams }: { searchParams?: { rollNumber?: string } }) {
-  const rollNumberStr = searchParams?.rollNumber;
+export default function StudentDashboardPage({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) {
+  const rollNumberStr = searchParams?.rollNumber as string | undefined;
   if (!rollNumberStr) {
     redirect('/student/login');
   }
