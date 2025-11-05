@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { redirect } from 'next/navigation';
-import { Suspense, useMemo } from 'react';
+import { Suspense, useMemo, use } from 'react';
 import { Progress } from '@/components/ui/progress';
 import type { AttendanceRecord } from '@/lib/types';
 
@@ -163,7 +163,10 @@ function StudentDashboard({ rollNumber }: { rollNumber: number }) {
 }
 
 export default function StudentDashboardPage({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) {
-  const rollNumberStr = searchParams?.rollNumber as string | undefined;
+  // The `use` hook is required to correctly access searchParams in Next.js 15+
+  const unwrappedSearchParams = use(searchParams);
+  const rollNumberStr = unwrappedSearchParams.rollNumber as string | undefined;
+
   if (!rollNumberStr) {
     redirect('/student/login');
   }
