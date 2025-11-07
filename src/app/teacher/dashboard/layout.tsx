@@ -32,12 +32,6 @@ import { Suspense } from 'react';
 import { getTeacherSchedule } from '@/lib/data';
 import { format } from 'date-fns';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 
 function TeacherName({ name }: { name: string | undefined }) {
   return (
@@ -54,7 +48,6 @@ function TeacherName({ name }: { name: string | undefined }) {
 
 export default function TeacherDashboardLayout({
   children,
-  searchParams,
 }: {
   children: React.ReactNode;
   searchParams?: { [key: string]: string | string[] | undefined };
@@ -62,7 +55,11 @@ export default function TeacherDashboardLayout({
   const teacherAvatar = PlaceHolderImages.find(
     (img) => img.id === 'teacher-avatar'
   );
-  const teacherName = searchParams?.name as string | undefined;
+
+  // This is a workaround to pass searchParams to a server component layout
+  const searchParams = (children as any)?.props?.childProp?.segment?.[1] || {};
+  const teacherName = searchParams.name as string | undefined;
+
 
   const today = new Date();
   const dayOfWeek = format(today, 'EEEE'); // e.g., "Monday"
@@ -166,21 +163,6 @@ export default function TeacherDashboardLayout({
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
-              <SidebarGroup>
-                <SidebarGroupLabel>Export</SidebarGroupLabel>
-                <SidebarGroupContent>
-                  <SidebarMenu>
-                    <SidebarMenuItem>
-                       <SidebarMenuButton asChild tooltip={{ children: 'Export Attendance' }}>
-                          <Link href={`/api/attendance/export?name=${teacherName || ''}`} prefetch={false}>
-                            <FileDown />
-                            <span>Export Attendance</span>
-                          </Link>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  </SidebarMenu>
-                </SidebarGroupContent>
-              </SidebarGroup>
             </SidebarMenu>
           </SidebarContent>
           <SidebarFooter>

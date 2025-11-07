@@ -1,8 +1,12 @@
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowRight, BookCheck, ScanLine } from 'lucide-react';
+import { ArrowRight, BookCheck, ScanLine, FileDown } from 'lucide-react';
 import { Suspense } from 'react';
+import ExportAttendanceDialog from '@/components/app/export-attendance-dialog';
+import { getTeacherSchedule } from '@/lib/data';
+import { format } from 'date-fns';
 
 function WelcomeMessage({ name }: { name: string | undefined }) {
   return (
@@ -18,6 +22,11 @@ export default function TeacherDashboardPage({
   searchParams: { name?: string };
 }) {
   const { name } = searchParams;
+  const today = new Date();
+  const dayOfWeek = format(today, 'EEEE');
+  const schedule = name ? getTeacherSchedule(name) : undefined;
+  const todayClasses = schedule?.schedule[dayOfWeek] || [];
+
   return (
     <div className="flex flex-1 flex-col bg-background">
       <main className="flex-1 p-4 md:p-8">
@@ -30,7 +39,7 @@ export default function TeacherDashboardPage({
           </p>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           <Card className="flex flex-col">
             <CardHeader>
               <div className="flex items-start justify-between">
@@ -84,6 +93,29 @@ export default function TeacherDashboardPage({
                   Use Summary Tool <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
+            </div>
+          </Card>
+           <Card className="flex flex-col">
+            <CardHeader>
+              <div className="flex items-start justify-between">
+                <div>
+                  <CardTitle className="font-headline text-2xl">
+                    Export Today's Attendance
+                  </CardTitle>
+                  <CardDescription>
+                    Download a CSV file for a specific class.
+                  </CardDescription>
+                </div>
+                <FileDown className="h-8 w-8 text-green-600" />
+              </div>
+            </CardHeader>
+            <CardContent className="flex-grow">
+              <p className="text-muted-foreground">
+                Select one of your classes for today to download the attendance sheet as a CSV file.
+              </p>
+            </CardContent>
+            <div className="p-6 pt-0">
+              <ExportAttendanceDialog classes={todayClasses} />
             </div>
           </Card>
         </div>
