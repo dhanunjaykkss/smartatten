@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition, useEffect } from 'react';
+import { useState, useTransition, useEffect, useCallback } from 'react';
 import { format } from 'date-fns';
 import { Calendar as CalendarIcon, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -28,7 +28,7 @@ import {
 } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import type { Student, AttendanceRecord } from '@/lib/types';
-import { saveAttendanceAction } from '@/lib/actions';
+import { saveAttendanceAction, getAttendanceForDateAndClassAction } from '@/lib/actions';
 import { useToast } from '@/hooks/use-toast';
 import { Switch } from '../ui/switch';
 import { Label } from '../ui/label';
@@ -42,26 +42,46 @@ export default function AttendanceSheet({
   students,
   classes,
   initialAttendance,
+  initialClass,
 }: {
   students: Student[];
   classes: string[];
   initialAttendance: AttendanceRecord[];
+  initialClass: string;
 }) {
   const [date] = useState<Date>(new Date());
-  const [selectedClass, setSelectedClass] = useState<string>(classes.length > 0 ? classes[0] : '');
+  const [selectedClass, setSelectedClass] = useState<string>(initialClass);
   const [attendance, setAttendance] = useState<Record<number, AttendanceStatus>>({});
   const [isPending, startTransition] = useTransition();
+  const [isFetching, startFetchingTransition] = useTransition();
   const { toast } = useToast();
 
-  useEffect(() => {
-    // When initial attendance data is loaded, populate the state
-    const initialStatus: Record<number, AttendanceStatus> = {};
+  const populateAttendance = useCallback((records: AttendanceRecord[]) => {
+    const newStatus: Record<number, AttendanceStatus> = {};
     students.forEach(student => {
-      const record = initialAttendance.find(r => r.studentRollNumber === student.rollNumber);
-      initialStatus[student.rollNumber] = record?.status || 'Present';
+      const record = records.find(r => r.studentRollNumber === student.rollNumber);
+      newStatus[student.rollNumber] = record?.status || 'Present';
     });
-    setAttendance(initialStatus);
-  }, [initialAttendance, students]);
+    setAttendance(newStatus);
+  }, [students]);
+
+  useEffect(() => {
+    populateAttendance(initialAttendance);
+  }, [initialAttendance, populateAttendance]);
+
+  const handleClassChange = (className: string) => {
+    setSelectedClass(className);
+    startFetchingTransition(async () => {
+        const formattedDate = format(date, 'yyyy-MM-dd');
+        const result = await getAttendanceForDateAndClassAction(formattedDate, className);
+        if (result.success && result.data) {
+            populateAttendance(result.data);
+        } else {
+            // Reset to default if no data is found or an error occurs
+            populateAttendance([]);
+        }
+    });
+  }
 
   const handleAttendanceChange = (rollNumber: number, status: boolean) => {
     setAttendance(prev => ({ ...prev, [rollNumber]: status ? 'Present' : 'Absent' }));
@@ -172,7 +192,7 @@ export default function AttendanceSheet({
             </PopoverContent>
           </Popover>
 
-          <Select value={selectedClass} onValueChange={setSelectedClass}>
+          <Select value={selectedClass} onValueChange={handleClassChange}>
             <SelectTrigger className="w-full md:w-[280px]">
               <SelectValue placeholder="Select a class" />
             </SelectTrigger>
@@ -184,13 +204,18 @@ export default function AttendanceSheet({
               ))}
             </SelectContent>
           </Select>
-          <Button onClick={handleSaveAttendance} disabled={isPending} className="md:ml-auto">
+          <Button onClick={handleSaveAttendance} disabled={isPending || isFetching} className="md:ml-auto">
             {isPending ? <Loader2 className="animate-spin" /> : 'Save Attendance'}
           </Button>
         </div>
       </CardHeader>
       <CardContent>
-        <div className="overflow-auto rounded-lg border">
+        <div className="relative overflow-auto rounded-lg border">
+           {isFetching && (
+                <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/50 backdrop-blur-sm">
+                    <Loader2 className="animate-spin text-primary" size={32} />
+                </div>
+            )}
           <Table>
             <TableHeader>
               <TableRow>

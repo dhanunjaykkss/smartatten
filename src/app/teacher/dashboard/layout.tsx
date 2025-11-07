@@ -5,6 +5,8 @@ import {
   LogOut,
   ScanLine,
   ShieldAlert,
+  CalendarDays,
+  FileDown,
 } from 'lucide-react';
 import {
   SidebarProvider,
@@ -17,6 +19,8 @@ import {
   SidebarFooter,
   SidebarTrigger,
   SidebarInset,
+  SidebarGroup,
+  SidebarGroupLabel,
 } from '@/components/ui/sidebar';
 import Logo from '@/components/app/logo';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -26,6 +30,12 @@ import { Suspense } from 'react';
 import { getTeacherSchedule } from '@/lib/data';
 import { format } from 'date-fns';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 function TeacherName({ name }: { name: string | undefined }) {
   return (
@@ -142,6 +152,33 @@ export default function TeacherDashboardLayout({
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+               <SidebarMenuItem>
+                <SidebarMenuButton asChild tooltip={{ children: 'Timetable' }}>
+                  <Link
+                    href={`/teacher/dashboard/timetable?name=${
+                      teacherName || ''
+                    }`}
+                  >
+                    <CalendarDays />
+                    <span>Timetable</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarGroup>
+                <SidebarGroupLabel>Export</SidebarGroupLabel>
+                <SidebarGroupContent>
+                  <SidebarMenu>
+                    <SidebarMenuItem>
+                       <SidebarMenuButton asChild tooltip={{ children: 'Export Attendance' }}>
+                          <Link href={`/api/attendance/export?name=${teacherName || ''}`} prefetch={false}>
+                            <FileDown />
+                            <span>Export Attendance</span>
+                          </Link>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  </SidebarMenu>
+                </SidebarGroupContent>
+              </SidebarGroup>
             </SidebarMenu>
           </SidebarContent>
           <SidebarFooter>

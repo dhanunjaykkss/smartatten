@@ -3,7 +3,7 @@
 import { z } from 'zod';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
-import { findStudentByRollNumber, saveAttendance, getAllAttendance, getStudents } from './data';
+import { findStudentByRollNumber, saveAttendance, getAllAttendance, getStudents, getAttendanceForDateAndClass } from './data';
 import { summarizeAttendanceData } from '@/ai/flows/summarize-attendance-data';
 import type { AttendanceRecord } from './types';
 
@@ -76,6 +76,16 @@ export async function saveAttendanceAction(
     return { success: true, message: 'Attendance saved.' };
   } catch (error) {
     return { success: false, message: 'Failed to save attendance.' };
+  }
+}
+
+// Get Attendance for a specific class and date
+export async function getAttendanceForDateAndClassAction(date: string, className: string) {
+  try {
+    const data = getAttendanceForDateAndClass(date, className);
+    return { success: true, data };
+  } catch (error) {
+    return { success: false, message: 'Failed to fetch attendance data.' };
   }
 }
 
