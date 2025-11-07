@@ -1,3 +1,4 @@
+
 import Image from 'next/image';
 import {
   BookCheck,
@@ -21,6 +22,7 @@ import {
   SidebarInset,
   SidebarGroup,
   SidebarGroupLabel,
+  SidebarGroupContent,
 } from '@/components/ui/sidebar';
 import Logo from '@/components/app/logo';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
