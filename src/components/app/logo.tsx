@@ -9,43 +9,47 @@ export default function Logo() {
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
-          <g clipPath="url(#clip0_3d_logo)">
+          <g clipPath="url(#clip0_2d_logo)">
+            <rect width="48" height="48" rx="24" fill="url(#paint0_linear_2d_logo)" />
             <path
-              d="M24 48C37.2548 48 48 37.2548 48 24C48 10.7452 37.2548 0 24 0C10.7452 0 0 10.7452 0 24C0 37.2548 10.7452 48 24 48Z"
-              fill="url(#paint0_linear_3d_logo)"
-            />
-            <path
-              d="M32.5 14.5L24.25 10L16 14.5L16 33.5L24.25 38L32.5 33.5V14.5Z"
+              d="M24 10L12 16V28L24 34L36 28V16L24 10Z"
               stroke="white"
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
             />
             <path
-              d="M16 14.5L24.25 19L32.5 14.5"
+              d="M18 20L24 23L30 20"
+              stroke="white"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+             <path
+              d="M24 34V23"
               stroke="white"
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
             />
             <path
-              d="M24.25 38V19"
-              stroke="white"
+              d="M15 14.5L21 11.5"
+               stroke="white"
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
             />
-            <path
-              d="M28.375 12.25L20.125 7.75"
-              stroke="white"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
+             <path
+                d="M33 14.5L27 11.5"
+                stroke="white"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
           </g>
           <defs>
             <linearGradient
-              id="paint0_linear_3d_logo"
+              id="paint0_linear_2d_logo"
               x1="0"
               y1="0"
               x2="48"
@@ -53,9 +57,9 @@ export default function Logo() {
               gradientUnits="userSpaceOnUse"
             >
               <stop stopColor="hsl(var(--primary))" />
-              <stop offset="1" stopColor="hsl(var(--primary) / 0.5)" />
+              <stop offset="1" stopColor="hsl(var(--primary) / 0.7)" />
             </linearGradient>
-            <clipPath id="clip0_3d_logo">
+            <clipPath id="clip0_2d_logo">
               <rect width="48" height="48" rx="24" fill="white" />
             </clipPath>
           </defs>
