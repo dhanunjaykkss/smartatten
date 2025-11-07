@@ -143,44 +143,12 @@ function StudentIcon() {
     >
       <g filter="url(#filter0_d_student_icon)">
         <rect x="4" width="40" height="40" rx="12" fill="hsl(var(--primary-foreground))" />
-         <rect x="4.5" y="0.5" width="39" height="39" rx="11.5" stroke="hsl(var(--border))" />
+        <rect x="4.5" y="0.5" width="39" height="39" rx="11.5" stroke="hsl(var(--border))" />
       </g>
-      <g clipPath="url(#clip0_student_icon)">
-        <path
-          d="M20 29V14.5L28 10V23.5"
-          stroke="hsl(var(--accent))"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        <path
-          d="M20 29L15 26.5"
-          stroke="hsl(var(--accent))"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        <path
-          d="M28 23.5L33 26.5"
-          stroke="hsl(var(--accent))"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        <path
-          d="M24 34L15 29V19"
-          stroke="hsl(var(--accent))"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        <path
-          d="M33 19V29L24 34"
-          stroke="hsl(var(--accent))"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
+      <g transform="translate(12, 12) scale(0.6)">
+        <path d="M4.242,22.5,24,33.75,43.758,22.5,24,11.25Z" fill="black"/>
+        <path d="M35,31.25v-7.5L24,30,13,23.75v7.5L24,37.5Z" fill="black"/>
+        <path d="M35.625,10.313A11.25,11.25,0,0,0,24,3.75,11.25,11.25,0,0,0,12.375,10.313,8.438,8.438,0,0,0,13.125,20,8.438,8.438,0,0,0,24,25a8.438,8.438,0,0,0,10.875-5A8.438,8.438,0,0,0,35.625,10.313Z" fill="hsl(var(--accent))"/>
       </g>
       <defs>
         <filter
@@ -218,9 +186,6 @@ function StudentIcon() {
             result="shape"
           />
         </filter>
-        <clipPath id="clip0_student_icon">
-          <rect x="10" y="6" width="28" height="28" rx="14" fill="white" />
-        </clipPath>
       </defs>
     </svg>
   );
