@@ -30,20 +30,9 @@ export async function teacherLogin(
 
   const schedule = getTeacherSchedule(fullName);
 
+  // The check for schedule and password remains, but the day-specific check is removed.
   if (schedule && password === 'aua9ncrc') {
-    const today = new Date();
-    const dayOfWeek = format(today, 'EEEE'); // e.g., "Monday"
-    const hasClassesToday = schedule.schedule[dayOfWeek]?.length > 0;
-
-    if (hasClassesToday) {
-      redirect(`/teacher/dashboard?name=${encodeURIComponent(fullName)}`);
-    } else {
-        // Redirect to a specific "no class" page or back to home with a message
-        // For simplicity, we can redirect to a dedicated page or show a message.
-        // Let's redirect to an access denied page that we will create.
-        // For now, let's just return a message. A dedicated page would be better UX.
-        return { message: 'You have no classes scheduled for today. Access denied.' };
-    }
+    redirect(`/teacher/dashboard?name=${encodeURIComponent(fullName)}`);
   }
 
   return { message: 'Invalid full name or password.' };
