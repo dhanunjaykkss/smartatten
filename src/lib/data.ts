@@ -100,7 +100,7 @@ export const classes = [
 
 const teacherSchedules: TeacherSchedule[] = [
   {
-    teacherName: 'Jane Doe', // This is a sample teacher name.
+    teacherName: 'ms nillema',
     schedule: {
         Monday: [
             "C Programming Lab",
@@ -142,33 +142,6 @@ export const getTeacherSchedule = (teacherName: string): TeacherSchedule | undef
 
 // In-memory store for attendance
 let attendanceLog: AttendanceRecord[] = [];
-
-// Pre-populate with some fake data for the summary tool
-const today = new Date();
-const datesToPopulate = Array.from({ length: 5 }, (_, i) => {
-  const d = new Date(today);
-  d.setDate(d.getDate() - i);
-  return d.toISOString().split('T')[0];
-});
-
-datesToPopulate.forEach(date => {
-  const dayOfWeek = new Date(date).toLocaleDateString('en-US', { weekday: 'long' });
-  const schedulableClasses = getTeacherSchedule('Jane Doe')?.schedule[dayOfWeek] || [];
-  schedulableClasses.forEach(className => {
-    students.forEach(student => {
-      // To make student data different but consistent across reloads,
-      // we can use a deterministic "random" value based on roll number and date.
-      const pseudoRandom = (student.rollNumber + new Date(date).getTime()) % 10;
-      attendanceLog.push({
-        studentRollNumber: student.rollNumber,
-        date,
-        class: className,
-        status: pseudoRandom > 0 ? 'Present' : 'Absent' // Approx 10% absent
-      });
-    });
-  });
-});
-
 
 export const getAttendanceForDateAndClass = (date: string, className: string): AttendanceRecord[] => {
   return attendanceLog.filter(record => record.date === date && record.class === className);
