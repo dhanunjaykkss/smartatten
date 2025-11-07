@@ -5,7 +5,6 @@ import {
   LayoutDashboard,
   LogOut,
   ScanLine,
-  ShieldAlert,
   CalendarDays,
   FileDown,
 } from 'lucide-react';
@@ -22,16 +21,12 @@ import {
   SidebarInset,
   SidebarGroup,
   SidebarGroupLabel,
-  SidebarGroupContent,
 } from '@/components/ui/sidebar';
 import Logo from '@/components/app/logo';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import Link from 'next/link';
 import { Suspense } from 'react';
-import { getTeacherSchedule } from '@/lib/data';
-import { format } from 'date-fns';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 function TeacherName({ name }: { name: string | undefined }) {
   return (
@@ -50,7 +45,6 @@ export default function TeacherDashboardLayout({
   children,
 }: {
   children: React.ReactNode;
-  searchParams?: { [key: string]: string | string[] | undefined };
 }) {
   const teacherAvatar = PlaceHolderImages.find(
     (img) => img.id === 'teacher-avatar'
@@ -59,47 +53,6 @@ export default function TeacherDashboardLayout({
   // This is a workaround to pass searchParams to a server component layout
   const searchParams = (children as any)?.props?.childProp?.segment?.[1] || {};
   const teacherName = searchParams.name as string | undefined;
-
-
-  const today = new Date();
-  const dayOfWeek = format(today, 'EEEE'); // e.g., "Monday"
-  let hasClassesToday = false;
-  if (teacherName) {
-    const schedule = getTeacherSchedule(teacherName);
-    if (schedule && schedule.schedule[dayOfWeek]?.length > 0) {
-      hasClassesToday = true;
-    }
-  } else {
-    // If no teacher name, assume they might have classes to avoid locking out.
-    // The login should enforce the name.
-    hasClassesToday = true;
-  }
-
-  if (!hasClassesToday) {
-    return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4">
-        <Card className="w-full max-w-md text-center">
-          <CardHeader>
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-destructive/10">
-              <ShieldAlert className="h-8 w-8 text-destructive" />
-            </div>
-            <CardTitle className="font-headline text-2xl text-destructive">
-              Access Denied
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground">
-              You do not have any classes scheduled for today. Access to the
-              teacher portal is only available on days with scheduled classes.
-            </p>
-            <Link href="/" className="mt-6 inline-block text-sm text-primary hover:underline">
-              Return to Home Page
-            </Link>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   return (
     <SidebarProvider>
@@ -163,6 +116,19 @@ export default function TeacherDashboardLayout({
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+              <SidebarGroup>
+                <SidebarGroupLabel>Export</SidebarGroupLabel>
+                  <SidebarMenu>
+                    <SidebarMenuItem>
+                       <SidebarMenuButton asChild tooltip={{ children: 'Export Attendance' }}>
+                          <Link href="#">
+                              <FileDown/>
+                              <span>Export Attendance</span>
+                          </Link>
+                       </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  </SidebarMenu>
+              </SidebarGroup>
             </SidebarMenu>
           </SidebarContent>
           <SidebarFooter>

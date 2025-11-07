@@ -3,9 +3,10 @@
 import { z } from 'zod';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
-import { findStudentByRollNumber, saveAttendance, getAllAttendance, getStudents, getAttendanceForDateAndClass } from './data';
+import { findStudentByRollNumber, saveAttendance, getAllAttendance, getStudents, getAttendanceForDateAndClass, getTeacherSchedule } from './data';
 import { summarizeAttendanceData } from '@/ai/flows/summarize-attendance-data';
 import type { AttendanceRecord } from './types';
+import { format } from 'date-fns';
 
 // Teacher Login
 const teacherLoginSchema = z.object({
@@ -27,8 +28,22 @@ export async function teacherLogin(
 
   const { fullName, password } = parsed.data;
 
-  if (password === 'aua9ncrc') {
-    redirect(`/teacher/dashboard?name=${encodeURIComponent(fullName)}`);
+  const schedule = getTeacherSchedule(fullName);
+
+  if (schedule && password === 'aua9ncrc') {
+    const today = new Date();
+    const dayOfWeek = format(today, 'EEEE'); // e.g., "Monday"
+    const hasClassesToday = schedule.schedule[dayOfWeek]?.length > 0;
+
+    if (hasClassesToday) {
+      redirect(`/teacher/dashboard?name=${encodeURIComponent(fullName)}`);
+    } else {
+        // Redirect to a specific "no class" page or back to home with a message
+        // For simplicity, we can redirect to a dedicated page or show a message.
+        // Let's redirect to an access denied page that we will create.
+        // For now, let's just return a message. A dedicated page would be better UX.
+        return { message: 'You have no classes scheduled for today. Access denied.' };
+    }
   }
 
   return { message: 'Invalid full name or password.' };
