@@ -13,33 +13,26 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { FileDown, Loader2 } from 'lucide-react';
 import { Slot } from '@radix-ui/react-slot';
+import { Input } from '../ui/input';
 
 export default function ExportAttendanceDialog({ classes, children, asTrigger = false }: { classes: string[], children?: React.ReactNode, asTrigger?: boolean }) {
   const [open, setOpen] = useState(false);
-  const [selectedClass, setSelectedClass] = useState<string>('');
+  const [selectedMonth, setSelectedMonth] = useState<string>(format(new Date(), 'yyyy-MM'));
   const [isDownloading, setIsDownloading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleExport = async () => {
-    if (!selectedClass) {
-      setError('Please select a class to export.');
+    if (!selectedMonth) {
+      setError('Please select a month to export.');
       return;
     }
     setError(null);
     setIsDownloading(true);
 
-    const today = format(new Date(), 'yyyy-MM-dd');
-    const url = `/api/attendance/export?className=${encodeURIComponent(selectedClass)}&date=${today}`;
+    const url = `/api/attendance/export?month=${encodeURIComponent(selectedMonth)}`;
 
     try {
         const response = await fetch(url);
@@ -79,7 +72,7 @@ export default function ExportAttendanceDialog({ classes, children, asTrigger = 
   const handleOpenChange = (isOpen: boolean) => {
     setOpen(isOpen);
     if (!isOpen) {
-      setSelectedClass('');
+      setSelectedMonth(format(new Date(), 'yyyy-MM'));
       setError(null);
       setIsDownloading(false);
     }
@@ -93,7 +86,7 @@ export default function ExportAttendanceDialog({ classes, children, asTrigger = 
       <DialogTrigger asChild>
         <Trigger>
             {children ? children : (
-                <Button variant="outline" disabled={classes.length === 0}>
+                <Button variant="outline">
                     <FileDown className="mr-2" />
                     Export Data
                 </Button>
@@ -102,33 +95,28 @@ export default function ExportAttendanceDialog({ classes, children, asTrigger = 
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Export Today's Attendance</DialogTitle>
+          <DialogTitle>Export Monthly Attendance</DialogTitle>
           <DialogDescription>
-            Select a class to download the attendance sheet as a CSV file for {format(new Date(), 'PPP')}.
+            Select a month and year to download a full attendance sheet for all your classes.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="class-select" className="text-right">
-              Class
+            <Label htmlFor="month-select" className="text-right">
+              Month
             </Label>
-            <Select value={selectedClass} onValueChange={setSelectedClass}>
-              <SelectTrigger id="class-select" className="col-span-3">
-                <SelectValue placeholder="Select a class" />
-              </SelectTrigger>
-              <SelectContent>
-                {classes.map((c) => (
-                  <SelectItem key={c} value={c}>
-                    {c}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Input
+              id="month-select"
+              type="month"
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(e.target.value)}
+              className="col-span-3"
+            />
           </div>
           {error && <p className="text-sm text-destructive text-center col-span-4">{error}</p>}
         </div>
         <DialogFooter>
-          <Button onClick={handleExport} disabled={isDownloading || !selectedClass}>
+          <Button onClick={handleExport} disabled={isDownloading || !selectedMonth}>
             {isDownloading ? (
                 <>
                     <Loader2 className="mr-2 animate-spin" />

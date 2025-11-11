@@ -76,7 +76,7 @@ export default function TeacherDashboardPage({
                     Export Attendance
                   </CardTitle>
                   <CardDescription>
-                    Download a CSV file for a specific class.
+                    Download a monthly CSV file.
                   </CardDescription>
                 </div>
                 <FileDown className="h-8 w-8 text-green-600" />
@@ -84,7 +84,7 @@ export default function TeacherDashboardPage({
             </CardHeader>
             <CardContent className="flex-grow">
               <p className="text-muted-foreground">
-                Select one of your classes for today to download the attendance sheet as a CSV file.
+                Select a month to download the complete attendance sheet for all your classes as a CSV file.
               </p>
             </CardContent>
             <div className="p-6 pt-0">
