@@ -125,19 +125,6 @@ export default function TeacherDashboardLayout({
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
-              <SidebarGroup>
-                <SidebarGroupLabel>Export</SidebarGroupLabel>
-                  <SidebarMenu>
-                    <SidebarMenuItem>
-                       <ExportAttendanceDialog classes={todayClasses} asTrigger>
-                         <SidebarMenuButton asChild={false} tooltip={{ children: 'Export Attendance' }}>
-                            <FileDown/>
-                            <span>Export Attendance</span>
-                         </SidebarMenuButton>
-                       </ExportAttendanceDialog>
-                    </SidebarMenuItem>
-                  </SidebarMenu>
-              </SidebarGroup>
             </SidebarMenu>
           </SidebarContent>
           <SidebarFooter>

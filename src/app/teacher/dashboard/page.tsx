@@ -68,6 +68,30 @@ export default function TeacherDashboardPage({
             </div>
           </Card>
 
+           <Card className="flex flex-col">
+            <CardHeader>
+              <div className="flex items-start justify-between">
+                <div>
+                  <CardTitle className="font-headline text-2xl">
+                    Export Attendance
+                  </CardTitle>
+                  <CardDescription>
+                    Download a CSV file for a specific class.
+                  </CardDescription>
+                </div>
+                <FileDown className="h-8 w-8 text-green-600" />
+              </div>
+            </CardHeader>
+            <CardContent className="flex-grow">
+              <p className="text-muted-foreground">
+                Select one of your classes for today to download the attendance sheet as a CSV file.
+              </p>
+            </CardContent>
+            <div className="p-6 pt-0">
+              <ExportAttendanceDialog classes={todayClasses} />
+            </div>
+          </Card>
+
           <Card className="flex flex-col">
             <CardHeader>
               <div className="flex items-start justify-between">
@@ -93,29 +117,6 @@ export default function TeacherDashboardPage({
                   Use Summary Tool <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
-            </div>
-          </Card>
-           <Card className="flex flex-col">
-            <CardHeader>
-              <div className="flex items-start justify-between">
-                <div>
-                  <CardTitle className="font-headline text-2xl">
-                    Export Today's Attendance
-                  </CardTitle>
-                  <CardDescription>
-                    Download a CSV file for a specific class.
-                  </CardDescription>
-                </div>
-                <FileDown className="h-8 w-8 text-green-600" />
-              </div>
-            </CardHeader>
-            <CardContent className="flex-grow">
-              <p className="text-muted-foreground">
-                Select one of your classes for today to download the attendance sheet as a CSV file.
-              </p>
-            </CardContent>
-            <div className="p-6 pt-0">
-              <ExportAttendanceDialog classes={todayClasses} />
             </div>
           </Card>
         </div>
