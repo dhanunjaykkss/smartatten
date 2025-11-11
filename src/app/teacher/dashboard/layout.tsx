@@ -27,6 +27,9 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import Link from 'next/link';
 import { Suspense } from 'react';
+import ExportAttendanceDialog from '@/components/app/export-attendance-dialog';
+import { getTeacherSchedule } from '@/lib/data';
+import { format } from 'date-fns';
 
 function TeacherName({ name }: { name: string | undefined }) {
   return (
@@ -53,6 +56,12 @@ export default function TeacherDashboardLayout({
   // This is a workaround to pass searchParams to a server component layout
   const searchParams = (children as any)?.props?.childProp?.segment?.[1] || {};
   const teacherName = searchParams.name as string | undefined;
+
+  const today = new Date();
+  const dayOfWeek = format(today, 'EEEE');
+  const schedule = teacherName ? getTeacherSchedule(teacherName) : undefined;
+  const todayClasses = schedule?.schedule[dayOfWeek] || [];
+
 
   return (
     <SidebarProvider>
@@ -120,12 +129,12 @@ export default function TeacherDashboardLayout({
                 <SidebarGroupLabel>Export</SidebarGroupLabel>
                   <SidebarMenu>
                     <SidebarMenuItem>
-                       <SidebarMenuButton asChild tooltip={{ children: 'Export Attendance' }}>
-                          <Link href="#">
-                              <FileDown/>
-                              <span>Export Attendance</span>
-                          </Link>
-                       </SidebarMenuButton>
+                       <ExportAttendanceDialog classes={todayClasses} asTrigger>
+                         <SidebarMenuButton asChild={false} tooltip={{ children: 'Export Attendance' }}>
+                            <FileDown/>
+                            <span>Export Attendance</span>
+                         </SidebarMenuButton>
+                       </ExportAttendanceDialog>
                     </SidebarMenuItem>
                   </SidebarMenu>
               </SidebarGroup>

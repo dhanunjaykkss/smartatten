@@ -9,7 +9,7 @@ export interface AttendanceRecord {
   studentRollNumber: number;
   date: string; // YYYY-MM-DD
   class: string;
-  status: 'Present' | 'Absent';
+  status: 'Present' | 'Absent' | 'Holiday';
 }
 
 export interface TeacherSchedule {

@@ -22,8 +22,9 @@ import {
 } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { FileDown, Loader2 } from 'lucide-react';
+import { Slot } from '@radix-ui/react-slot';
 
-export default function ExportAttendanceDialog({ classes }: { classes: string[] }) {
+export default function ExportAttendanceDialog({ classes, children, asTrigger = false }: { classes: string[], children?: React.ReactNode, asTrigger?: boolean }) {
   const [open, setOpen] = useState(false);
   const [selectedClass, setSelectedClass] = useState<string>('');
   const [isDownloading, setIsDownloading] = useState(false);
@@ -84,13 +85,20 @@ export default function ExportAttendanceDialog({ classes }: { classes: string[] 
     }
   }
 
+  const Trigger = asTrigger ? Slot : 'div';
+
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button variant="outline" disabled={classes.length === 0}>
-          <FileDown className="mr-2" />
-          Export Data
-        </Button>
+        <Trigger>
+            {children ? children : (
+                <Button variant="outline" disabled={classes.length === 0}>
+                    <FileDown className="mr-2" />
+                    Export Data
+                </Button>
+            )}
+        </Trigger>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>

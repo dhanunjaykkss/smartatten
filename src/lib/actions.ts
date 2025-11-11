@@ -68,7 +68,7 @@ export async function studentLogin(
 export async function saveAttendanceAction(
   date: string,
   className: string,
-  attendance: Record<number, 'Present' | 'Absent'>
+  attendance: Record<number, 'Present' | 'Absent' | 'Holiday'>
 ) {
   try {
     const records = Object.entries(attendance).map(([rollNumber, status]) => ({

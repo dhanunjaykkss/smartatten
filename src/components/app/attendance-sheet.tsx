@@ -2,7 +2,7 @@
 
 import { useState, useTransition, useEffect, useCallback, useMemo } from 'react';
 import { format } from 'date-fns';
-import { Calendar as CalendarIcon, Loader2 } from 'lucide-react';
+import { Calendar as CalendarIcon, Loader2, XCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
@@ -34,9 +34,20 @@ import { Switch } from '../ui/switch';
 import { Label } from '../ui/label';
 import { Alert, AlertTitle, AlertDescription } from '../ui/alert';
 import { Info } from 'lucide-react';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 
-type AttendanceStatus = 'Present' | 'Absent';
+type AttendanceStatus = 'Present' | 'Absent' | 'Holiday';
 
 export default function AttendanceSheet({
   students,
@@ -95,7 +106,7 @@ export default function AttendanceSheet({
     setAttendance(prev => ({ ...prev, [rollNumber]: status ? 'Present' : 'Absent' }));
   };
   
-  const handleSaveAttendance = async () => {
+  const handleSaveAttendance = async (holiday = false) => {
     if (!selectedClass) {
         toast({
           variant: 'destructive',
@@ -104,18 +115,32 @@ export default function AttendanceSheet({
         });
         return;
     }
+
+    let finalAttendance = attendance;
+    if (holiday) {
+        const holidayAttendance: Record<number, AttendanceStatus> = {};
+        filteredStudents.forEach(student => {
+            holidayAttendance[student.rollNumber] = 'Holiday';
+        });
+        finalAttendance = holidayAttendance;
+        setAttendance(holidayAttendance);
+    }
+
+
     startTransition(async () => {
       const formattedDate = format(date, 'yyyy-MM-dd');
       const result = await saveAttendanceAction(
         formattedDate,
         selectedClass,
-        attendance
+        finalAttendance
       );
 
       if (result.success) {
         toast({
-          title: 'Attendance Saved',
-          description: `Attendance for ${selectedClass} on ${formattedDate} has been saved successfully.`,
+          title: holiday ? 'Class Canceled' : 'Attendance Saved',
+          description: holiday 
+            ? `Class ${selectedClass} on ${formattedDate} marked as holiday.`
+            : `Attendance for ${selectedClass} on ${formattedDate} has been saved successfully.`,
         });
       } else {
         toast({
@@ -212,9 +237,31 @@ export default function AttendanceSheet({
               ))}
             </SelectContent>
           </Select>
-          <Button onClick={handleSaveAttendance} disabled={isPending || isFetching} className="md:ml-auto">
-            {isPending ? <Loader2 className="animate-spin" /> : 'Save Attendance'}
-          </Button>
+          <div className="flex gap-2 md:ml-auto">
+             <AlertDialog>
+                <AlertDialogTrigger asChild>
+                    <Button variant="destructive" disabled={isPending || isFetching}>
+                        <XCircle />
+                        <span>Cancel Class</span>
+                    </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        This will mark the attendance for all students in <strong>{selectedClass}</strong> as a "Holiday". This indicates the class was canceled. This action cannot be undone easily.
+                    </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                    <AlertDialogCancel>Dismiss</AlertDialogCancel>
+                    <AlertDialogAction onClick={() => handleSaveAttendance(true)}>Confirm</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+            <Button onClick={() => handleSaveAttendance(false)} disabled={isPending || isFetching}>
+              {isPending ? <Loader2 className="animate-spin" /> : 'Save Attendance'}
+            </Button>
+          </div>
         </div>
       </CardHeader>
       <CardContent>
@@ -235,7 +282,7 @@ export default function AttendanceSheet({
             </TableHeader>
             <TableBody>
               {filteredStudents.map(student => (
-                <TableRow key={student.rollNumber}>
+                <TableRow key={student.rollNumber} data-status={attendance[student.rollNumber]}>
                   <TableCell className="font-medium">{student.rollNumber}</TableCell>
                   <TableCell>{student.name}</TableCell>
                   <TableCell>
@@ -246,6 +293,7 @@ export default function AttendanceSheet({
                         checked={attendance[student.rollNumber] === 'Present'}
                         onCheckedChange={(checked) => handleAttendanceChange(student.rollNumber, checked)}
                         aria-label={`Mark ${student.name} as present or absent`}
+                        disabled={attendance[student.rollNumber] === 'Holiday'}
                       />
                       <Label htmlFor={`status-${student.rollNumber}`} className="font-medium text-foreground">Present</Label>
                     </div>
@@ -253,8 +301,10 @@ export default function AttendanceSheet({
                   <TableCell className="text-right">
                     {attendance[student.rollNumber] === 'Present' ? (
                         <span className='font-medium text-green-600'>Present</span>
-                    ) : (
+                    ) : attendance[student.rollNumber] === 'Absent' ? (
                         <span className='font-medium text-red-600'>Absent</span>
+                    ) : (
+                        <span className='font-medium text-blue-600'>Holiday</span>
                     )}
                   </TableCell>
                 </TableRow>

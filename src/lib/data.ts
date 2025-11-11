@@ -125,7 +125,7 @@ const teacherSchedules: TeacherSchedule[] = [
         Friday: [
             "Mathematics–I",
             "Green Chemistry",
-            "Computer Engineering Workshop (CSE-SS-13)",
+            "Computer Engg. Workshop (CSE-SS-13)",
             "Communication Skills Lab (CSE-SS-14)",
         ],
         Saturday: [
@@ -156,7 +156,7 @@ export const getAttendanceForStudent = (rollNumber: number): AttendanceRecord[] 
 
 export const getAllAttendance = (): AttendanceRecord[] => attendanceLog;
 
-export const saveAttendance = (records: { studentRollNumber: number; status: 'Present' | 'Absent' }[], date: string, className: string) => {
+export const saveAttendance = (records: { studentRollNumber: number; status: 'Present' | 'Absent' | 'Holiday' }[], date: string, className: string) => {
   // Remove old records for the same date and class to avoid duplicates
   attendanceLog = attendanceLog.filter(r => !(r.date === date && r.class === className));
   

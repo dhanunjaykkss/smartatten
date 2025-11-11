@@ -16,6 +16,7 @@ import { redirect } from 'next/navigation';
 import { Suspense, useMemo, use } from 'react';
 import { Progress } from '@/components/ui/progress';
 import type { AttendanceRecord } from '@/lib/types';
+import { cn } from '@/lib/utils';
 
 function StudentInfo({ rollNumber }: { rollNumber: number }) {
   const student = findStudentByRollNumber(rollNumber);
@@ -33,8 +34,9 @@ function StudentInfo({ rollNumber }: { rollNumber: number }) {
 }
 
 function calculateOverallAttendanceStats(attendance: AttendanceRecord[]) {
-  const totalRecords = attendance.length;
-  const presentRecords = attendance.filter(r => r.status === 'Present').length;
+  const relevantRecords = attendance.filter(r => r.status !== 'Holiday');
+  const totalRecords = relevantRecords.length;
+  const presentRecords = relevantRecords.filter(r => r.status === 'Present').length;
   const absentRecords = totalRecords - presentRecords;
   const attendancePercentage = totalRecords > 0 ? Math.round((presentRecords / totalRecords) * 100) : 100;
 
@@ -44,7 +46,7 @@ function calculateOverallAttendanceStats(attendance: AttendanceRecord[]) {
 
 function calculateSubjectWiseStats(attendance: AttendanceRecord[]) {
     return allSubjects.map(subject => {
-        const subjectRecords = attendance.filter(r => r.class === subject);
+        const subjectRecords = attendance.filter(r => r.class === subject && r.status !== 'Holiday');
         const totalClasses = subjectRecords.length;
         const presentClasses = subjectRecords.filter(r => r.status === 'Present').length;
         const absentClasses = totalClasses - presentClasses;
@@ -82,6 +84,15 @@ function StudentDashboard({ rollNumber }: { rollNumber: number }) {
     }, {} as Record<string, typeof attendance>);
   }, [attendance]);
   const sortedDates = Object.keys(attendanceByDate);
+
+  const getBadgeVariant = (status: 'Present' | 'Absent' | 'Holiday') => {
+    switch (status) {
+        case 'Present': return 'default';
+        case 'Absent': return 'destructive';
+        case 'Holiday': return 'secondary';
+    }
+  }
+
 
   return (
     <div className="flex-1 p-4 md:p-8">
@@ -196,7 +207,7 @@ function StudentDashboard({ rollNumber }: { rollNumber: number }) {
                             )}
                             <TableCell>{record.class}</TableCell>
                             <TableCell>
-                            <Badge variant={record.status === 'Present' ? 'default' : 'destructive'}>
+                            <Badge variant={getBadgeVariant(record.status)}>
                                 {record.status}
                             </Badge>
                             </TableCell>
