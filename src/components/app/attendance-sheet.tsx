@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition, useEffect, useCallback } from 'react';
+import { useState, useTransition, useEffect, useCallback, useMemo } from 'react';
 import { format } from 'date-fns';
 import { Calendar as CalendarIcon, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -56,31 +56,39 @@ export default function AttendanceSheet({
   const [isFetching, startFetchingTransition] = useTransition();
   const { toast } = useToast();
 
+  const filteredStudents = useMemo(() => {
+    if (selectedClass.includes('(CSE-SS-13)')) {
+      return students.filter(s => s.batch === 'CSE-SS-13');
+    }
+    if (selectedClass.includes('(CSE-SS-14)')) {
+      return students.filter(s => s.batch === 'CSE-SS-14');
+    }
+    return students;
+  }, [selectedClass, students]);
+
   const populateAttendance = useCallback((records: AttendanceRecord[]) => {
     const newStatus: Record<number, AttendanceStatus> = {};
-    students.forEach(student => {
+    filteredStudents.forEach(student => {
       const record = records.find(r => r.studentRollNumber === student.rollNumber);
       newStatus[student.rollNumber] = record?.status || 'Present';
     });
     setAttendance(newStatus);
-  }, [students]);
+  }, [filteredStudents]);
 
   useEffect(() => {
-    populateAttendance(initialAttendance);
-  }, [initialAttendance, populateAttendance]);
-
-  const handleClassChange = (className: string) => {
-    setSelectedClass(className);
     startFetchingTransition(async () => {
         const formattedDate = format(date, 'yyyy-MM-dd');
-        const result = await getAttendanceForDateAndClassAction(formattedDate, className);
+        const result = await getAttendanceForDateAndClassAction(formattedDate, selectedClass);
         if (result.success && result.data) {
             populateAttendance(result.data);
         } else {
-            // Reset to default if no data is found or an error occurs
             populateAttendance([]);
         }
     });
+  }, [selectedClass, populateAttendance, date]);
+
+  const handleClassChange = (className: string) => {
+    setSelectedClass(className);
   }
 
   const handleAttendanceChange = (rollNumber: number, status: boolean) => {
@@ -226,7 +234,7 @@ export default function AttendanceSheet({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {students.map(student => (
+              {filteredStudents.map(student => (
                 <TableRow key={student.rollNumber}>
                   <TableCell className="font-medium">{student.rollNumber}</TableCell>
                   <TableCell>{student.name}</TableCell>

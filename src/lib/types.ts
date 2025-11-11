@@ -2,6 +2,7 @@ export interface Student {
   rollNumber: number;
   name: string;
   phone: string;
+  batch: 'CSE-SS-13' | 'CSE-SS-14';
 }
 
 export interface AttendanceRecord {
