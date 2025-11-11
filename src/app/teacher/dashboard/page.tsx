@@ -23,9 +23,12 @@ export default function TeacherDashboardPage({
 }) {
   const { name } = searchParams;
   const today = new Date();
-  const dayOfWeek = format(today, 'EEEE');
   const schedule = name ? getTeacherSchedule(name) : undefined;
-  const todayClasses = schedule?.schedule[dayOfWeek] || [];
+  
+  // Get all unique classes from the schedule
+  const allTeacherClasses = schedule 
+    ? [...new Set(Object.values(schedule.schedule).flat())]
+    : [];
 
   return (
     <div className="flex flex-1 flex-col bg-background">
@@ -76,7 +79,7 @@ export default function TeacherDashboardPage({
                     Export Attendance
                   </CardTitle>
                   <CardDescription>
-                    Download a monthly CSV file.
+                    Download attendance data.
                   </CardDescription>
                 </div>
                 <FileDown className="h-8 w-8 text-green-600" />
@@ -84,11 +87,11 @@ export default function TeacherDashboardPage({
             </CardHeader>
             <CardContent className="flex-grow">
               <p className="text-muted-foreground">
-                Select a month to download the complete attendance sheet for all your classes as a CSV file.
+                Export records for a specific day, or a full month for a selected subject or all subjects.
               </p>
             </CardContent>
             <div className="p-6 pt-0">
-              <ExportAttendanceDialog classes={todayClasses} />
+              <ExportAttendanceDialog classes={allTeacherClasses} />
             </div>
           </Card>
 
