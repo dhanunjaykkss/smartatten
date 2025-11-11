@@ -17,8 +17,8 @@ import {
 const generalDetails = {
   Department: 'Computer Science Engineering',
   Room: 'GF-9, NCRC',
-  'Batch CSE-SS-13': 'Roll Nos. 421–455',
-  'Batch CSE-SS-14': 'Roll Nos. 456–590',
+  'Batch CSE-SS-13': 'Roll Nos. 463–499',
+  'Batch CSE-SS-14': 'Roll Nos. 500–536',
   Commencement: '04-08-2025',
   'Effective from': '18-08-2025',
 };
