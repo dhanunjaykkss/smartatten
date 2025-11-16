@@ -31,7 +31,7 @@ export async function teacherLogin(
   const schedule = getTeacherSchedule(fullName);
 
   // The check for schedule and password remains, but the day-specific check is removed.
-  if (schedule && password === 'aua9ncrc') {
+  if (schedule && password === 'makea9best') {
     redirect(`/teacher/dashboard?name=${encodeURIComponent(fullName)}`);
   }
 

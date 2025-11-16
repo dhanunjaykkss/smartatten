@@ -101,46 +101,54 @@ export const classes = [
     "Green Chemistry",
 ];
 
+const defaultSchedule = {
+    Monday: [
+        "C Programming Lab (CSE-SS-13)",
+        "Computer Engineering Workshop (CSE-SS-14)",
+    ],
+    Tuesday: [
+        "Computer Programming Using C",
+        "IT Essentials",
+    ],
+    Wednesday: [
+        "Communication Skills Lab (CSE-SS-13)",
+        "C Programming Lab (CSE-SS-14)",
+    ],
+    Thursday: [
+        "English",
+        "IT Essentials",
+        "Computer Programming Using C",
+    ],
+    Friday: [
+        "Mathematics–I",
+        "Green Chemistry",
+        "Computer Engineering Workshop (CSE-SS-13)",
+        "Communication Skills Lab (CSE-SS-14)",
+    ],
+    Saturday: [
+        "Green Chemistry",
+        "Mathematics–I"
+    ],
+    Sunday: [],
+};
+
 const teacherSchedules: TeacherSchedule[] = [
   {
     teacherName: 'ms nillema',
-    schedule: {
-        Monday: [
-            "C Programming Lab (CSE-SS-13)",
-            "Computer Engineering Workshop (CSE-SS-14)",
-        ],
-        Tuesday: [
-            "Computer Programming Using C",
-            "IT Essentials",
-        ],
-        Wednesday: [
-            "Communication Skills Lab (CSE-SS-13)",
-            "C Programming Lab (CSE-SS-14)",
-        ],
-        Thursday: [
-            "English",
-            "IT Essentials",
-            "Computer Programming Using C",
-        ],
-        Friday: [
-            "Mathematics–I",
-            "Green Chemistry",
-            "Computer Engg. Workshop (CSE-SS-13)",
-            "Communication Skills Lab (CSE-SS-14)",
-        ],
-        Saturday: [
-            "Green Chemistry",
-            "Mathematics–I"
-        ],
-        Sunday: [],
-    },
+    schedule: defaultSchedule,
+  },
+  {
+    teacherName: 'Swayansh',
+    schedule: defaultSchedule,
+  },
+  {
+    teacherName: 'Dhanunjay',
+    schedule: defaultSchedule,
   },
 ];
 
 export const getTeacherSchedule = (teacherName: string): TeacherSchedule | undefined => {
-  // In a real app, you'd find the schedule for the specific teacher.
-  // For this demo, we'll return the first schedule for any teacher.
-  return teacherSchedules.find(s => s.teacherName === teacherName) || teacherSchedules[0];
+  return teacherSchedules.find(s => s.teacherName.toLowerCase() === teacherName.toLowerCase());
 };
 
 // In-memory store for attendance
