@@ -2,11 +2,12 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowRight, BookCheck, ScanLine, FileDown } from 'lucide-react';
+import { ArrowRight, BookCheck, ScanLine, FileDown, CalendarClock } from 'lucide-react';
 import { Suspense } from 'react';
 import ExportAttendanceDialog from '@/components/app/export-attendance-dialog';
 import { getTeacherSchedule } from '@/lib/data';
 import { format } from 'date-fns';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 function WelcomeMessage({ name }: { name: string | undefined }) {
   return (
@@ -14,6 +15,53 @@ function WelcomeMessage({ name }: { name: string | undefined }) {
       Welcome back, {name || 'Teacher'}!
     </h1>
   );
+}
+
+function TodaysSchedule({ name }: { name: string | undefined }) {
+  const today = new Date();
+  const dayOfWeek = format(today, 'EEEE');
+  const schedule = name ? getTeacherSchedule(name) : undefined;
+  const todayClasses = schedule?.schedule[dayOfWeek] || [];
+
+  return (
+     <Card className="flex flex-col lg:col-span-3">
+        <CardHeader>
+          <div className="flex items-start justify-between">
+            <div>
+                <CardTitle className="font-headline text-2xl">
+                    Today's Schedule ({dayOfWeek})
+                </CardTitle>
+                <CardDescription>
+                    Your scheduled classes for today.
+                </CardDescription>
+            </div>
+            <CalendarClock className="h-8 w-8 text-blue-600" />
+          </div>
+        </CardHeader>
+        <CardContent className="flex-grow">
+          {todayClasses.length > 0 ? (
+             <div className="overflow-auto rounded-lg border">
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>Class Name</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {todayClasses.map((className, index) => (
+                            <TableRow key={index}>
+                                <TableCell>{className}</TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+             </div>
+          ) : (
+            <p className="text-muted-foreground">You have no classes scheduled for today.</p>
+          )}
+        </CardContent>
+      </Card>
+  )
 }
 
 export default function TeacherDashboardPage({
@@ -43,6 +91,8 @@ export default function TeacherDashboardPage({
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <TodaysSchedule name={name} />
+
           <Card className="flex flex-col">
             <CardHeader>
               <div className="flex items-start justify-between">
@@ -127,3 +177,4 @@ export default function TeacherDashboardPage({
     </div>
   );
 }
+
