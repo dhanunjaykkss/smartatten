@@ -33,13 +33,14 @@ const schedule = {
     ],
     Tuesday: [
         { time: '9:00 AM – 10:40 AM', subject: 'Computer Programming Using C', faculty: 'Prof. G. Sandhya Devi', location: 'Classroom' },
-        { time: '10:40 AM – 12:20 PM', subject: 'IT Essentials', faculty: 'Prof. A. Gowthami Latha', location: 'Classroom' },
+        { time: '10:40 AM – 11:20 AM', subject: 'IT Essentials', faculty: 'Prof. A. Gowthami Latha', location: 'Classroom' },
+        { time: '11:20 AM – 12:20 PM', subject: 'Free / Self-Study', faculty: '', location: '' },
         { time: '12:20 PM – 1:30 PM', subject: 'Lunch Break', faculty: '', location: '' },
         { time: '1:30 PM – 4:00 PM', subject: 'Tutorial / Self-Study / Library', faculty: '', location: '' },
     ],
     Wednesday: [
-        { time: '9:00 AM – 9:50 AM', subject: 'Communication Skills Lab (Batch CSE-SS-13)', faculty: 'ms nillema', location: 'Lab-II' },
-        { time: '9:50 AM – 10:40 AM', subject: 'C Programming Lab (Batch CSE-SS-14)', faculty: 'Prof. PSN Raju', location: 'Lab-II' },
+        { time: '9:00 AM – 9:50 AM', subject: 'Communication Skills Lab (CSE-SS-13)', faculty: 'ms nillema', location: 'Lab-II' },
+        { time: '9:50 AM – 10:40 AM', subject: 'C Programming Lab (CSE-SS-14)', faculty: 'Prof. PSN Raju', location: 'Lab-II' },
         { time: '10:40 AM – 12:20 PM', subject: 'Free / Self-Study', faculty: '', location: '' },
         { time: '12:20 PM – 1:30 PM', subject: 'Lunch Break', faculty: '', location: '' },
         { time: '1:30 PM – 4:00 PM', subject: 'Free / Self-Study / Library', faculty: '', location: '' },
@@ -55,8 +56,8 @@ const schedule = {
         { time: '9:00 AM – 10:40 AM', subject: 'Mathematics–I', faculty: 'Mr. T. Ganesh', location: 'Classroom' },
         { time: '10:40 AM – 12:20 PM', subject: 'Green Chemistry', faculty: 'Dr. D. Chinna Rao', location: 'Classroom' },
         { time: '12:20 PM – 1:30 PM', subject: 'Lunch Break', faculty: '', location: '' },
-        { time: '1:30 PM – 3:10 PM', subject: 'Computer Engg. Workshop (Batch CSE-SS-13)', faculty: 'Mr. K. Venkatesu', location: 'WS Lab-I' },
-        { time: '3:10 PM – 4:00 PM', subject: 'Communication Skills Lab (Batch CSE-SS-14)', faculty: 'ms nillema', location: 'Lab-II' },
+        { time: '1:30 PM – 3:10 PM', subject: 'Computer Engg. Workshop (CSE-SS-13)', faculty: 'Mr. K. Venkatesu', location: 'WS Lab-I' },
+        { time: '3:10 PM – 4:00 PM', subject: 'Communication Skills Lab (CSE-SS-14)', faculty: 'ms nillema', location: 'Lab-II' },
         { time: '—', subject: 'SWATCH BHARATH (Activity)', faculty: '—', location: '—' },
     ],
     Saturday: [
