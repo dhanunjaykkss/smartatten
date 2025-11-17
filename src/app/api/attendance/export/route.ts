@@ -68,16 +68,31 @@ export async function GET(req: NextRequest) {
     
     if (attendanceData.length === 0) {
       const subjectName = subject && subject !== 'all' ? ` for ${subject}` : '';
-      const noDataMessage = `No attendance data available from ${format(startDate, 'PPP')} to ${format(endDate, 'PPP')}${subjectName}. An empty file will be downloaded.`;
+      const noDataMessage = `No attendance data available from ${format(startDate, 'PPP')} to ${format(endDate, 'PPP')}${subjectName}. A file with student and class info has been downloaded.`;
       
-      const csvData = 'Date,Class,Roll Number,Student Name,Status\n';
-      const headers = new Headers();
-      headers.set('Content-Type', 'text/csv');
-      headers.set('Content-Disposition', `attachment; filename="${fileName}"`);
-      // Add a custom header to inform the client
-      headers.set('X-No-Data-Message', noDataMessage);
+      const allStudents = getStudents();
+      const headers = ['Roll Number', 'Student Name', 'Batch'];
+      
+      const studentRows = allStudents.map(s => 
+        [s.rollNumber, `"${s.name}"`, s.batch].join(',')
+      );
 
-      return new NextResponse(csvData, { status: 200, headers });
+      const csvData = [
+        `"No attendance records found for the selected criteria."`,
+        `"Export Range: ${format(startDate, 'PPP')} to ${format(endDate, 'PPP')}"`,
+        `"Subject: ${subject || 'All Subjects'}"`,
+        ``,
+        `"Student List"`,
+        headers.join(','), 
+        ...studentRows
+      ].join('\n');
+
+      const responseHeaders = new Headers();
+      responseHeaders.set('Content-Type', 'text/csv');
+      responseHeaders.set('Content-Disposition', `attachment; filename="${fileName}"`);
+      responseHeaders.set('X-No-Data-Message', noDataMessage);
+
+      return new NextResponse(csvData, { status: 200, headers: responseHeaders });
     }
 
     const csvData = convertToCsv(attendanceData);
