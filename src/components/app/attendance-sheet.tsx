@@ -2,7 +2,7 @@
 
 import { useState, useTransition, useEffect, useCallback, useMemo } from 'react';
 import { format } from 'date-fns';
-import { Calendar as CalendarIcon, Loader2, XCircle } from 'lucide-react';
+import { Calendar as CalendarIcon, Loader2, XCircle, Lock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
@@ -54,11 +54,13 @@ export default function AttendanceSheet({
   classes,
   initialAttendance,
   initialClass,
+  teacherName
 }: {
   students: Student[];
   classes: string[];
   initialAttendance: AttendanceRecord[];
   initialClass: string;
+  teacherName?: string;
 }) {
   const [date] = useState<Date>(new Date());
   const [selectedClass, setSelectedClass] = useState<string>(initialClass);
@@ -66,6 +68,11 @@ export default function AttendanceSheet({
   const [isPending, startTransition] = useTransition();
   const [isFetching, startFetchingTransition] = useTransition();
   const { toast } = useToast();
+  const [isLocked, setIsLocked] = useState(false);
+
+  const isAdmin = useMemo(() => {
+    return teacherName === 'Swayansh' || teacherName === 'Dhanunjay';
+  }, [teacherName]);
 
   const filteredStudents = useMemo(() => {
     if (selectedClass.includes('(CSE-SS-13)')) {
@@ -79,12 +86,17 @@ export default function AttendanceSheet({
 
   const populateAttendance = useCallback((records: AttendanceRecord[]) => {
     const newStatus: Record<number, AttendanceStatus> = {};
+    const attendanceExists = records.length > 0;
+    
     filteredStudents.forEach(student => {
       const record = records.find(r => r.studentRollNumber === student.rollNumber);
       newStatus[student.rollNumber] = record?.status || 'Present';
     });
+    
     setAttendance(newStatus);
-  }, [filteredStudents]);
+    setIsLocked(attendanceExists && !isAdmin);
+
+  }, [filteredStudents, isAdmin]);
 
   useEffect(() => {
     startFetchingTransition(async () => {
@@ -103,6 +115,7 @@ export default function AttendanceSheet({
   }
 
   const handleAttendanceChange = (rollNumber: number, status: boolean) => {
+    if (isLocked) return;
     setAttendance(prev => ({ ...prev, [rollNumber]: status ? 'Present' : 'Absent' }));
   };
   
@@ -112,6 +125,15 @@ export default function AttendanceSheet({
           variant: 'destructive',
           title: 'No Class Selected',
           description: 'Please select a class to save attendance.',
+        });
+        return;
+    }
+
+    if (isLocked) {
+        toast({
+          variant: 'destructive',
+          title: 'Attendance Locked',
+          description: 'Attendance has already been saved for this class today and can only be modified by an admin.',
         });
         return;
     }
@@ -142,6 +164,9 @@ export default function AttendanceSheet({
             ? `Class ${selectedClass} on ${formattedDate} marked as holiday.`
             : `Attendance for ${selectedClass} on ${formattedDate} has been saved successfully.`,
         });
+        if (!isAdmin) {
+            setIsLocked(true);
+        }
       } else {
         toast({
           variant: 'destructive',
@@ -200,6 +225,15 @@ export default function AttendanceSheet({
         <CardDescription>
             You can only take attendance for your classes scheduled today, <strong>{format(date, 'PPP')}</strong>.
         </CardDescription>
+        {isLocked && (
+             <Alert variant="destructive" className="mt-4">
+                <Lock className="h-4 w-4" />
+                <AlertTitle>Attendance Locked</AlertTitle>
+                <AlertDescription>
+                   Attendance has been submitted for this class today. Only an administrator can make changes.
+                </AlertDescription>
+            </Alert>
+        )}
         <div className="mt-4 flex flex-col gap-4 md:flex-row md:items-center">
           <Popover>
             <PopoverTrigger asChild>
@@ -240,7 +274,7 @@ export default function AttendanceSheet({
           <div className="flex gap-2 md:ml-auto">
              <AlertDialog>
                 <AlertDialogTrigger asChild>
-                    <Button variant="destructive" disabled={isPending || isFetching}>
+                    <Button variant="destructive" disabled={isPending || isFetching || isLocked}>
                         <XCircle />
                         <span>Cancel Class</span>
                     </Button>
@@ -258,7 +292,7 @@ export default function AttendanceSheet({
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
-            <Button onClick={() => handleSaveAttendance(false)} disabled={isPending || isFetching}>
+            <Button onClick={() => handleSaveAttendance(false)} disabled={isPending || isFetching || isLocked}>
               {isPending ? <Loader2 className="animate-spin" /> : 'Save Attendance'}
             </Button>
           </div>
@@ -293,7 +327,7 @@ export default function AttendanceSheet({
                         checked={attendance[student.rollNumber] === 'Present'}
                         onCheckedChange={(checked) => handleAttendanceChange(student.rollNumber, checked)}
                         aria-label={`Mark ${student.name} as present or absent`}
-                        disabled={attendance[student.rollNumber] === 'Holiday'}
+                        disabled={attendance[student.rollNumber] === 'Holiday' || isLocked}
                       />
                       <Label htmlFor={`status-${student.rollNumber}`} className="font-medium text-foreground">Present</Label>
                     </div>

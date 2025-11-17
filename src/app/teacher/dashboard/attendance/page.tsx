@@ -41,6 +41,7 @@ export default function AttendancePage({
         classes={teacherClasses}
         initialAttendance={initialAttendance}
         initialClass={initialClass}
+        teacherName={teacherName}
       />
     </div>
   );
