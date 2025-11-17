@@ -128,7 +128,7 @@ export default function ExportAttendanceDialog({ classes, children, asTrigger = 
         <DialogHeader>
           <DialogTitle>Export Attendance Data</DialogTitle>
           <DialogDescription>
-            Download attendance records for a specific date range. To export for a single day, set the "From" and "To" dates to be the same.
+            Download records for a date range. To export for a single day, set the "From" and "To" dates to be the same.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-6 py-4">

@@ -30,9 +30,9 @@ function convertToCsv(data: AttendanceRecord[]): string {
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
-    const startDateStr = searchParams.get('startDate'); // e.g., "2024-08-01"
-    const endDateStr = searchParams.get('endDate');   // e.g., "2024-08-31"
-    const subject = searchParams.get('subject');     // e.g., "Mathematics–I"
+    const startDateStr = searchParams.get('startDate');
+    const endDateStr = searchParams.get('endDate');
+    const subject = searchParams.get('subject');
 
     if (!startDateStr || !endDateStr) {
         return new NextResponse('Missing required parameters: startDate and endDate', {
