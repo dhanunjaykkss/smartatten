@@ -17,47 +17,33 @@ import { Label } from '@/components/ui/label';
 import { FileDown, Loader2 } from 'lucide-react';
 import { Slot } from '@radix-ui/react-slot';
 import { Input } from '../ui/input';
-import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-
-type ExportType = 'month' | 'day';
 
 export default function ExportAttendanceDialog({ classes, children, asTrigger = false }: { classes: string[], children?: React.ReactNode, asTrigger?: boolean }) {
   const [open, setOpen] = useState(false);
-  const [selectedMonth, setSelectedMonth] = useState<string>(format(new Date(), 'yyyy-MM'));
-  const [selectedDay, setSelectedDay] = useState<string>(format(new Date(), 'yyyy-MM-dd'));
+  const [startDate, setStartDate] = useState<string>(format(new Date(), 'yyyy-MM-dd'));
+  const [endDate, setEndDate] = useState<string>(format(new Date(), 'yyyy-MM-dd'));
   const [selectedSubject, setSelectedSubject] = useState<string>('all');
-  const [exportType, setExportType] = useState<ExportType>('month');
   const [isDownloading, setIsDownloading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleExport = async () => {
     let url = `/api/attendance/export?`;
-    let hasParams = false;
-
-    if (exportType === 'month') {
-        if (!selectedMonth) {
-            setError('Please select a month.');
-            return;
-        }
-        url += `month=${encodeURIComponent(selectedMonth)}`;
-        hasParams = true;
-    } else { // 'day'
-        if (!selectedDay) {
-            setError('Please select a day.');
-            return;
-        }
-        url += `date=${encodeURIComponent(selectedDay)}`;
-        hasParams = true;
-    }
     
+    if (!startDate || !endDate) {
+        setError('Please select a start and end date.');
+        return;
+    }
+
+    if (new Date(startDate) > new Date(endDate)) {
+        setError('Start date cannot be after end date.');
+        return;
+    }
+
+    url += `startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`;
+
     if (selectedSubject !== 'all') {
         url += `&subject=${encodeURIComponent(selectedSubject)}`;
-    }
-
-    if (!hasParams) {
-        setError('Please select criteria for export.');
-        return;
     }
 
     setError(null);
@@ -102,10 +88,9 @@ export default function ExportAttendanceDialog({ classes, children, asTrigger = 
     setOpen(isOpen);
     if (!isOpen) {
       // Reset state on close
-      setSelectedMonth(format(new Date(), 'yyyy-MM'));
-      setSelectedDay(format(new Date(), 'yyyy-MM-dd'));
+      setStartDate(format(new Date(), 'yyyy-MM-dd'));
+      setEndDate(format(new Date(), 'yyyy-MM-dd'));
       setSelectedSubject('all');
-      setExportType('month');
       setError(null);
       setIsDownloading(false);
     }
@@ -129,50 +114,35 @@ export default function ExportAttendanceDialog({ classes, children, asTrigger = 
         <DialogHeader>
           <DialogTitle>Export Attendance Data</DialogTitle>
           <DialogDescription>
-            Download attendance records for a specific day or an entire month.
+            Download attendance records for a specific date range.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-6 py-4">
-            <RadioGroup defaultValue="month" onValueChange={(value: ExportType) => setExportType(value)}>
-                <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="month" id="r-month" />
-                    <Label htmlFor="r-month">Export by Month</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="day" id="r-day" />
-                    <Label htmlFor="r-day">Export by Day</Label>
-                </div>
-            </RadioGroup>
-
-            {exportType === 'month' && (
-                <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="month-select" className="text-right">
-                    Month
-                    </Label>
-                    <Input
-                    id="month-select"
-                    type="month"
-                    value={selectedMonth}
-                    onChange={(e) => setSelectedMonth(e.target.value)}
-                    className="col-span-3"
-                    />
-                </div>
-            )}
-
-            {exportType === 'day' && (
-                 <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="day-select" className="text-right">
-                    Day
-                    </Label>
-                    <Input
-                    id="day-select"
-                    type="date"
-                    value={selectedDay}
-                    onChange={(e) => setSelectedDay(e.target.value)}
-                    className="col-span-3"
-                    />
-                </div>
-            )}
+            <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="start-date-select" className="text-right">
+                From
+                </Label>
+                <Input
+                id="start-date-select"
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="col-span-3"
+                />
+            </div>
+            
+            <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="end-date-select" className="text-right">
+                To
+                </Label>
+                <Input
+                id="end-date-select"
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="col-span-3"
+                />
+            </div>
 
             <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="subject-select" className="text-right">

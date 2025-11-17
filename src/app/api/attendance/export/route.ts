@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAllAttendance, getStudents } from '@/lib/data';
 import type { AttendanceRecord } from '@/lib/types';
-import { format, startOfMonth, endOfMonth, parseISO, isValid } from 'date-fns';
+import { format, parseISO, isValid, isWithinInterval } from 'date-fns';
 
 function convertToCsv(data: AttendanceRecord[]): string {
     const students = getStudents();
@@ -30,47 +30,41 @@ function convertToCsv(data: AttendanceRecord[]): string {
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
-    const month = searchParams.get('month'); // e.g., "2024-08"
-    const date = searchParams.get('date'); // e.g., "2024-08-15"
-    const subject = searchParams.get('subject'); // e.g., "Mathematics–I"
+    const startDateStr = searchParams.get('startDate'); // e.g., "2024-08-01"
+    const endDateStr = searchParams.get('endDate');   // e.g., "2024-08-31"
+    const subject = searchParams.get('subject');     // e.g., "Mathematics–I"
 
-    if (!month && !date) {
-        return new NextResponse('Missing required parameter: month or date', {
+    if (!startDateStr || !endDateStr) {
+        return new NextResponse('Missing required parameters: startDate and endDate', {
             status: 400,
             headers: { 'Content-Type': 'text/plain' },
         });
     }
+
+    const startDate = parseISO(startDateStr);
+    const endDate = parseISO(endDateStr);
+
+    if (!isValid(startDate) || !isValid(endDate)) {
+         return new NextResponse('Invalid date format.', { status: 400 });
+    }
+
+    if (startDate > endDate) {
+        return new NextResponse('Start date cannot be after end date.', { status: 400 });
+    }
     
     let attendanceData = getAllAttendance();
-    let fileName = 'attendance.csv';
-    let noDataMessage = 'No attendance data available for the selected criteria.';
+    let fileName = `attendance_${startDateStr}_to_${endDateStr}.csv`;
+    let noDataMessage = `No attendance data available from ${format(startDate, 'PPP')} to ${format(endDate, 'PPP')}.`;
 
-    if (date) {
-        const targetDate = parseISO(date);
-        if (!isValid(targetDate)) {
-             return new NextResponse('Invalid date format.', { status: 400 });
-        }
-        attendanceData = attendanceData.filter(record => record.date === date);
-        fileName = `attendance_${date.replace(/-/g, '_')}.csv`;
-        noDataMessage = `No attendance data available for ${format(targetDate, 'PPP')}.`;
-    } else if (month) {
-        const targetDate = parseISO(`${month}-01`);
-        const startDate = startOfMonth(targetDate);
-        const endDate = endOfMonth(targetDate);
-
-        attendanceData = attendanceData.filter(record => {
-            const recordDate = parseISO(record.date);
-            return recordDate >= startDate && recordDate <= endDate;
-        });
-
-        fileName = `attendance_${month.replace('-', '_')}.csv`;
-        noDataMessage = `No attendance data available for ${format(targetDate, 'MMMM yyyy')}.`;
-    }
+    attendanceData = attendanceData.filter(record => {
+        const recordDate = parseISO(record.date);
+        return isWithinInterval(recordDate, { start: startDate, end: endDate });
+    });
 
     if (subject && subject !== 'all') {
         attendanceData = attendanceData.filter(record => record.class === subject);
         const safeSubjectName = subject.replace(/[^a-z0-9]/gi, '_').toLowerCase();
-        fileName = `attendance_${month || date}_${safeSubjectName}.csv`;
+        fileName = `attendance_${startDateStr}_to_${endDateStr}_${safeSubjectName}.csv`;
     }
     
     if (attendanceData.length === 0) {
