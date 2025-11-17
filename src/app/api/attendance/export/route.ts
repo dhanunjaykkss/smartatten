@@ -54,8 +54,7 @@ export async function GET(req: NextRequest) {
     
     let attendanceData = getAllAttendance();
     let fileName = `attendance_${startDateStr}_to_${endDateStr}.csv`;
-    let noDataMessage = `No attendance data available from ${format(startDate, 'PPP')} to ${format(endDate, 'PPP')}.`;
-
+    
     attendanceData = attendanceData.filter(record => {
         const recordDate = parseISO(record.date);
         return isWithinInterval(recordDate, { start: startDate, end: endDate });
@@ -68,10 +67,17 @@ export async function GET(req: NextRequest) {
     }
     
     if (attendanceData.length === 0) {
-      return new NextResponse(noDataMessage, {
-        status: 404,
-        headers: { 'Content-Type': 'text/plain' },
-      });
+      const subjectName = subject && subject !== 'all' ? ` for ${subject}` : '';
+      const noDataMessage = `No attendance data available from ${format(startDate, 'PPP')} to ${format(endDate, 'PPP')}${subjectName}. An empty file will be downloaded.`;
+      
+      const csvData = 'Date,Class,Roll Number,Student Name,Status\n';
+      const headers = new Headers();
+      headers.set('Content-Type', 'text/csv');
+      headers.set('Content-Disposition', `attachment; filename="${fileName}"`);
+      // Add a custom header to inform the client
+      headers.set('X-No-Data-Message', noDataMessage);
+
+      return new NextResponse(csvData, { status: 200, headers });
     }
 
     const csvData = convertToCsv(attendanceData);

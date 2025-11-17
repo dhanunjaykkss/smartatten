@@ -18,6 +18,10 @@ import { FileDown, Loader2 } from 'lucide-react';
 import { Slot } from '@radix-ui/react-slot';
 import { Input } from '../ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { useToast } from '@/hooks/use-toast';
+import { Alert, AlertTitle, AlertDescription } from '../ui/alert';
+import { Info } from 'lucide-react';
+
 
 export default function ExportAttendanceDialog({ classes, children, asTrigger = false }: { classes: string[], children?: React.ReactNode, asTrigger?: boolean }) {
   const [open, setOpen] = useState(false);
@@ -26,6 +30,7 @@ export default function ExportAttendanceDialog({ classes, children, asTrigger = 
   const [selectedSubject, setSelectedSubject] = useState<string>('all');
   const [isDownloading, setIsDownloading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { toast } = useToast();
 
   const handleExport = async () => {
     let url = `/api/attendance/export?`;
@@ -54,6 +59,15 @@ export default function ExportAttendanceDialog({ classes, children, asTrigger = 
         if (!response.ok) {
             const errorText = await response.text();
             throw new Error(errorText || 'Failed to download file.');
+        }
+
+        const noDataMessage = response.headers.get('X-No-Data-Message');
+        if (noDataMessage) {
+            toast({
+                title: 'No Data Found',
+                description: noDataMessage,
+                duration: 5000,
+            })
         }
 
         const blob = await response.blob();
@@ -114,7 +128,7 @@ export default function ExportAttendanceDialog({ classes, children, asTrigger = 
         <DialogHeader>
           <DialogTitle>Export Attendance Data</DialogTitle>
           <DialogDescription>
-            Download attendance records for a specific date range.
+            Download attendance records for a specific date range. To export for a single day, set the "From" and "To" dates to be the same.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-6 py-4">
